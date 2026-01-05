@@ -1,0 +1,1 @@
+import{j as s,O as a}from"./vendor-DWb21r7D.js";import{N as t,F as o}from"./shared-components-E8G5ZYNI.js";const e=()=>s.jsxs("section",{className:"w-full h-full bg-background",children:[s.jsx(t,{}),s.jsx("main",{className:"min-h-[600px] max-w-[1200px] mx-auto py-20 px-4",children:s.jsx(a,{})}),s.jsx(o,{})]});export{e as default};

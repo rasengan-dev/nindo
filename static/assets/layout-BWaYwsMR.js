@@ -1,0 +1,1 @@
+import{u as e,j as s,O as r}from"./vendor-DWb21r7D.js";import{c as t}from"./shared-components-E8G5ZYNI.js";const u=()=>{const{isDark:a}=e();return s.jsx("section",{className:t("w-full h-full min-h-screen font-raleway bg-background",a&&"dark"),children:s.jsx(r,{})})};export{u as default};
