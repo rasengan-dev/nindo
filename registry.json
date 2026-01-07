@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "nindo",
+  "homepage": "https://nindo.rasengan.dev",
+  "items": [
+    {
+      "name": "markdown-editor",
+      "type": "registry:block",
+      "title": "Markdown Editor",
+      "description": "A simple Markdown Editor component",
+      "files": [
+        {
+          "path": "src/registry/nindo/editors/markdown/markdown.tsx",
+          "type": "registry:component"
+        }
+      ]
+    }
+  ]
+}

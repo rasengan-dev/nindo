@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "rasengan dev",
     "build": "rasengan build",
+    "registry:build": "shadcn build",
     "serve": "rasengan-serve ./static"
   },
   "dependencies": {
