@@ -1,4 +1,5 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/common/ui/button';
+import { MarkdownEditor } from '@/registry/nindo/editors/markdown/markdown';
 import { Copy, ArrowRight } from 'lucide-react';
 import { PageComponent } from 'rasengan';
 
@@ -39,7 +40,9 @@ const Page: PageComponent = () => {
       </div>
 
       <div className='mt-20 w-full'>
-        <iframe src='/blog' className='w-full h-[calc(100vh-200px)] border border-border rounded-xl'></iframe>
+        <div className='w-full h-[calc(100vh-200px)]'>
+          <MarkdownEditor />
+        </div>
       </div>
     </section>
   );

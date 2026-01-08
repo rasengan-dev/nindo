@@ -1,9 +1,8 @@
-import { PageComponent } from 'rasengan';
 import React, { useState, useCallback, useRef, useEffect, useMemo, ComponentProps } from 'react';
+import { Card } from "@/components/common/ui/card";
 import { Markdown } from '@rasenganjs/mdx';
-import { Button } from '@/components/ui/button';
-import { Bold, Braces, CodeXml, Heading1, Heading2, Heading3, Italic, Link2, Quote, Redo2, SunMoon, Undo2 } from 'lucide-react';
-import { useTheme } from '@rasenganjs/theme';
+import { Button } from '@/components/common/ui/button';
+import { Bold, Braces, CodeXml, Edit2, Eye, Heading1, Heading2, Heading3, Italic, Link2, Quote, Redo2, SquareSplitHorizontal, Undo2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // ============================================================================
@@ -382,39 +381,95 @@ const EditorToolbar: React.FC<{
   actions: ToolbarAction[];
   onAction: (action: ToolbarAction) => void;
   currentBlock: Block | null;
-}> = ({ actions, onAction, currentBlock }) => {
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  mode?: ViewMode;
+  setMode?: (mode: ViewMode) => void;
+}> = ({ actions, onAction, currentBlock, undo, redo, canUndo, canRedo, mode, setMode }) => {
   return (
-    <div className="flex items-center gap-2 h-[50px] px-2 py-3 bg-background border-b border-border">
-      <div className="flex items-center gap-1">
-        {/* <span className="text-xs text-foreground font-medium mr-2">Format:</span> */}
-        {actions.slice(0, 4).map(action => (
-          <Button
-            key={action.id}
-            onClick={() => onAction(action)}
-						size={"icon"}
-						variant="outline"
-						className="text-foreground/70"
-            title={`${action.label}${action.shortcut ? ` (${action.shortcut})` : ''}`}
-          >
-            {action.icon}
-          </Button>
-        ))}
+    <div className="flex items-center justify-between gap-2 h-[50px] px-2 py-3 bg-background border-b border-border">
+      <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-1">
+          {actions.slice(0, 4).map(action => (
+            <Button
+              key={action.id}
+              onClick={() => onAction(action)}
+              size={"icon"}
+              variant="outline"
+              className="text-foreground/70"
+              title={`${action.label}${action.shortcut ? ` (${action.shortcut})` : ''}`}
+            >
+              {action.icon}
+            </Button>
+          ))}
+        </div>
+        <div className="w-px h-6 bg-border" />
+        <div className="flex items-center gap-1">
+          {actions.slice(4).map(action => (
+            <Button
+              key={action.id}
+              onClick={() => onAction(action)}
+              size={"icon"}
+              variant="outline"
+              className="text-foreground/70"
+              title={action.label}
+            >
+              {action.icon}
+            </Button>
+          ))}
+        </div>
       </div>
-      <div className="w-px h-6 bg-border" />
-      <div className="flex items-center gap-1">
-        {/* <span className="text-xs text-foreground font-medium mr-2">Block:</span> */}
-        {actions.slice(4).map(action => (
+
+      <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-1'>
           <Button
-            key={action.id}
-            onClick={() => onAction(action)}
-            size={"icon"}
-            variant="outline"
-            className="text-foreground/70"
-            title={action.label}
+            size={"icon"} 
+            onClick={() => setMode && setMode("edit")}
+            variant={mode === "edit" ? "default" : "outline"} 
+            title="Edit"
           >
-            {action.icon}
+            <Edit2 />
           </Button>
-        ))}
+          <Button
+            size={"icon"} 
+            onClick={() => setMode && setMode("split")}
+            variant={mode === "split" ? "default" : "outline"} 
+            title="Split"
+          >
+            <SquareSplitHorizontal />
+          </Button>
+          <Button
+            size={"icon"} 
+            onClick={() => setMode && setMode("preview")}
+            variant={mode === "preview" ? "default" : "outline"} 
+            title="Preview"
+          >
+            <Eye />
+          </Button>
+        </div>
+        <div className="w-px h-6 bg-border" />
+        <Button
+          onClick={undo}
+          disabled={!canUndo}
+          size={"icon"} 
+          variant={"ghost"} 
+          className="text-foreground/70"
+          title="Undo (⌘Z)"
+        >
+          <Undo2 />
+        </Button>
+        <Button
+          onClick={redo}
+          disabled={!canRedo}
+          size={"icon"} 
+          variant={"ghost"} 
+          className="text-foreground/70"
+          title="Redo (⌘⇧Z)"
+        >
+          <Redo2 />
+        </Button>
       </div>
     </div>
   );
@@ -474,26 +529,27 @@ const MarkdownPreview: React.FC<{ content: string }> = ({ content }) => {
 // MAIN EDITOR COMPONENT
 // ============================================================================
 
-const MarkdownEditor: React.FC = () => {
-	const { isDark, setTheme } = useTheme();
-	
-  const [mode, setMode] = useState<ViewMode>('split');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const toolbarActions = useMemo(() => createToolbarActions(), []);
-  
-  const {
-    content,
-    selection,
-    currentBlock,
-    updateContent,
-    setSelection,
-    undo,
-    redo,
-    canUndo,
-    canRedo
-  } = useEditor(`# Welcome to the Editor
+const MarkdownEditor = ({
+  defaultContent = "",
+  onChangeContent
+}: { defaultContent?: string, onChangeContent?: (content: string) => void }) => {
+	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+	const [mode, setMode] = useState<ViewMode>("split");
+
+	const toolbarActions = createToolbarActions();
+
+	const {
+		content,
+		selection,
+		currentBlock,
+		updateContent,
+		setSelection,
+		undo,
+		redo,
+		canUndo,
+		canRedo
+	} = useEditor(defaultContent || `# Welcome to the Editor
 
 Start writing your **markdown** content here.
 
@@ -504,130 +560,74 @@ Start writing your **markdown** content here.
 - Block-based editing
 - Extensible architecture
 
-\`\`\`javascript
-const editor = new MarkdownEditor();
+\`\`\`jsx
+import { MarkdownEditor } from "@/components/ui/markdown";
+
+export default function Page() {
+	return <MarkdownEditor />
+}
 \`\`\`
 
 > This is a quote block
 
-Happy writing! ✨`);
+Happy writing! ✨
+  `);
+	useMarkdownShortcuts(textareaRef, updateContent);
 
-  useMarkdownShortcuts(textareaRef, updateContent);
+	const handleToolbarAction = useCallback((action: ToolbarAction) => {
+		const result = action.handler(content, selection);
+		updateContent(result.content, result.selection);
 
-  const handleToolbarAction = useCallback((action: ToolbarAction) => {
-    const result = action.handler(content, selection);
-    updateContent(result.content, result.selection);
-    
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        textareaRef.current.setSelectionRange(result.selection.start, result.selection.end);
-      }
-    }, 0);
-  }, [content, selection, updateContent]);
+    if (onChangeContent) {
+      onChangeContent(result.content);
+    }
+		
+		setTimeout(() => {
+			if (textareaRef.current) {
+				textareaRef.current.focus();
+				textareaRef.current.setSelectionRange(result.selection.start, result.selection.end);
+			}
+		}, 0);
+	}, [content, selection, updateContent]);
 
-  return (
-    <div className={`flex flex-col h-screen bg-background ${isFullscreen ? 'fixed inset-0 z-[9999]' : ''}`}>
-      <div className="flex justify-between items-center h-[50px] px-2 py-4 bg-background border-b border-b-border">
-        <div className="text-lg font-semibold text-foreground flex items-center gap-4">
-					<span>Nindo</span>
+	return (
+		<Card className="flex h-auto gap-0 shadow-none p-0 overflow-hidden">
+			<Editor.Toolbar
+				actions={toolbarActions}
+				onAction={handleToolbarAction}
+				currentBlock={currentBlock}
+				undo={undo}
+				redo={redo}
+				canUndo={canUndo}
+				canRedo={canRedo}
+				mode={mode}
+				setMode={setMode}
+			/>
 
-					{/* <div className="flex items-center gap-2">
-						<CloudUpload size={18} />
-						<span className="text-xs text-muted-foreground">saving...</span>
-					</div> */}
-				</div>
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setMode('edit')}
-            className={`px-4 py-1.5 border rounded-md transition-all text-sm ${
-              mode === 'edit'
-                ? 'bg-primary border-primary text-primary-foreground'
-                : 'border-border bg-background text-foreground hover:bg-accent hover:border-accent'
-            }`}
-          >
-            Edit
-          </Button>
-          <Button
-            onClick={() => setMode('split')}
-            className={`px-4 py-1.5 border rounded-md transition-all text-sm ${
-              mode === 'split'
-                ? 'bg-primary border-primary text-primary-foreground'
-                : 'border-border bg-background text-foreground hover:bg-accent hover:border-accent'
-            }`}
-          >
-            Split
-          </Button>
-          <Button
-						variant={"outline"}
-            onClick={() => setMode('preview')}
-            className={`px-4 py-1.5 rounded-md border transition-all text-sm ${
-              mode === 'preview'
-                ? 'bg-primary border-primary text-primary-foreground'
-                : 'border-border bg-background text-foreground hover:bg-accent hover:border-accent'
-            }`}
-          >
-            Preview
-          </Button>
-          <div className="w-px h-6 bg-border mx-1" />
-          <Button
-            onClick={undo}
-            disabled={!canUndo}
-						size={"icon"} 
-						variant={"ghost"} 
-						className="text-foreground/70"
-            title="Undo (⌘Z)"
-          >
-            <Undo2 />
-          </Button>
-          <Button
-            onClick={redo}
-            disabled={!canRedo}
-						size={"icon"} 
-						variant={"ghost"} 
-						className="text-foreground/70"
-            title="Redo (⌘⇧Z)"
-          >
-            <Redo2 />
-          </Button>
-          {/* <Button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="px-3 py-1.5 border border-zinc-700 bg-zinc-800 text-zinc-300 rounded-md hover:bg-zinc-700 hover:border-zinc-600 transition-all text-base"
-            title="Fullscreen"
-          >
-            {isFullscreen ? '⊗' : '⊕'}
-          </Button> */}
-          <Button size={"icon"} variant={"ghost"} className="text-foreground/70" onClick={() => setTheme(isDark ? 'light' : 'dark')}>
-            {!isDark ? (
-                <SunMoon className="rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0 opacity-100 dark:opacity-0" />
-            ) : (
-                <SunMoon className="rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 opacity-0 dark:opacity-100" />
-            )}
-        </Button>
-        </div>
-      </div>
+			<div className="w-full h-[700px] flex gap-2 p-2">
+				{
+					(mode === "edit" || mode === "split") && (
+						<Card className="flex gap-4 shadow-none w-full p-0 h-full overflow-auto">
+							<Editor.Core 
+								content={content}
+								onChange={updateContent}
+								onSelectionChange={setSelection}
+								textareaRef={textareaRef}
+							/>
+						</Card>
+					)
+				}
 
-      <EditorToolbar
-        actions={toolbarActions}
-        onAction={handleToolbarAction}
-        currentBlock={currentBlock}
-      />
+				{
+					(mode === "preview" || mode === "split") && (
+						<Card className="flex gap-4 shadow-none w-full p-0 h-full overflow-auto">
+							<Editor.Preview content={content} />
+						</Card>
+					)
+				}
+			</div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {(mode === 'edit' || mode === 'split') && (
-          <EditorCore
-            content={content}
-            onChange={updateContent}
-            onSelectionChange={setSelection}
-            textareaRef={textareaRef}
-          />
-        )}
-        {(mode === 'preview' || mode === 'split') && (
-          <MarkdownPreview content={content} />
-        )}
-      </div>
-
-      <div className="flex justify-end gap-6 px-6 py-2 bg-background border-t border-border text-xs text-zinc-500">
+			<div className="flex justify-end gap-6 px-6 py-2 bg-background border-t border-border text-xs text-zinc-500">
         <span className="flex items-center">
           {currentBlock ? `${currentBlock.type}${currentBlock.level ? ` (H${currentBlock.level})` : ''}` : 'paragraph'}
         </span>
@@ -635,15 +635,22 @@ Happy writing! ✨`);
           {content.split('\n').length} lines · {content.length} chars
         </span>
       </div>
-    </div>
-  );
-};
+		</Card>
+	)
+}
+
+const Editor = {
+  Core: EditorCore,
+  Toolbar: EditorToolbar,
+  Preview: MarkdownPreview
+}
 
 export {
-  EditorCore,
-  EditorToolbar,
+  Editor,
+  MarkdownEditor,
   useEditor,
   useMarkdownShortcuts,
   createToolbarActions,
-  type ToolbarAction
+  type ToolbarAction,
+  type ViewMode
 };

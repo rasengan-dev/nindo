@@ -1,7 +1,7 @@
 import { PageComponent } from 'rasengan';
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Markdown } from '@rasenganjs/mdx';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/common/ui/button';
 import { Bold, Braces, CloudUpload, CodeXml, Heading1, Heading2, Heading3, Italic, Link2, Quote, Redo2, SunMoon, Undo2 } from 'lucide-react';
 import { useTheme } from '@rasenganjs/theme';
 
