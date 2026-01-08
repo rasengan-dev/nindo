@@ -83,6 +83,19 @@ const getCurrentBlock = (blocks: Block[], cursorPos: number): Block | null => {
   return blocks.find(b => cursorPos >= b.startOffset && cursorPos <= b.endOffset) || null;
 };
 
+const mappingBlockToAction = (block: BlockType, level?: number): ToolbarAction["id"] => {
+  switch (block) {
+    case "heading": {
+      return `h${level && 0}`;
+    }
+    case 'code': return 'code-block'
+    case 'list': return "list";
+    case 'quote': return "quote";
+
+    default: return ""
+  }
+}
+
 // ============================================================================
 // FORMATTING UTILITIES
 // ============================================================================
@@ -397,8 +410,8 @@ const EditorToolbar: React.FC<{
               key={action.id}
               onClick={() => onAction(action)}
               size={"icon"}
-              variant="outline"
-              className="text-foreground/70"
+            variant={mappingBlockToAction(currentBlock?.type || 'paragraph', currentBlock?.level) === action.id ? "default" : "outline"}
+              className={"text-foreground/70"}
               title={`${action.label}${action.shortcut ? ` (${action.shortcut})` : ''}`}
             >
               {action.icon}

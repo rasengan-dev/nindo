@@ -1,0 +1,78 @@
+# Installation
+
+Nindo is distributed as a shadcn/ui-style registry component. This means you get a single, self-contained file that you can customize to your needs.
+
+## Prerequisites
+
+Before installing Nindo, ensure you have:
+
+- React 18+ 
+- TypeScript (recommended)
+- Tailwind CSS configured
+- `shadcn/ui` components (Button, Card)
+- `Lucide React` installed
+
+## Installation Methods
+
+### Method 1: Using shadcn CLI (Recommended)
+```bash
+npx shadcn-ui@latest add https://nindo.dev/registry/markdown.json
+```
+
+This will:
+- Download the `markdown.tsx` component
+- Place it in your `components/ui` directory
+- Install required dependencies
+
+### Method 2: Manual Installation
+
+1. **Copy the component file**
+
+Create `components/ui/markdown.tsx` and copy the Nindo source code.
+
+2. **Install dependencies**
+```bash
+npm install lucide-react @rasenganjs/mdx
+```
+
+3. **Ensure shadcn/ui components are installed**
+```bash
+npx shadcn-ui@latest add button card
+```
+
+## Verify Installation
+
+Create a test page:
+```tsx
+import { MarkdownEditor } from '@/components/ui/markdown';
+
+export default function TestPage() {
+  return (
+    <div className="container mx-auto p-8">
+      <MarkdownEditor />
+    </div>
+  );
+}
+```
+
+If you see the editor with toolbar and preview, you're good to go! 🎉
+
+## Troubleshooting
+
+**Issue**: `@rasenganjs/mdx` not found
+
+**Solution**: Install it manually:
+```bash
+npm install @rasenganjs/mdx
+```
+
+**Issue**: Button/Card components not styled
+
+**Solution**: Ensure Tailwind CSS is configured and shadcn/ui is properly set up:
+```bash
+npx shadcn-ui@latest init
+```
+
+## Next Steps
+
+Now that Nindo is installed, let's create your first editor in the [Quick Start](#quick-start) guide.

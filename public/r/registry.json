@@ -8,9 +8,11 @@
       "type": "registry:block",
       "title": "Markdown Editor",
       "description": "A simple Markdown Editor component",
+      "registryDependencies": ["button", "card"],
+      "dependencies": ["lucide-react", "@rasenganjs/mdx"],
       "files": [
         {
-          "path": "src/registry/nindo/editors/markdown/markdown.tsx",
+          "path": "src/registry/nindo/editors/markdown.tsx",
           "type": "registry:component"
         }
       ]

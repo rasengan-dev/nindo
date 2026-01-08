@@ -1,5 +1,5 @@
 import { Button } from '@/components/common/ui/button';
-import { MarkdownEditor } from '@/registry/nindo/editors/markdown/markdown';
+import { MarkdownEditor } from '@/registry/nindo/editors/markdown';
 import { Copy, ArrowRight } from 'lucide-react';
 import { PageComponent } from 'rasengan';
 
@@ -49,8 +49,8 @@ const Page: PageComponent = () => {
 };
 
 Page.metadata = {
-  title: "Home",
-  description: "Home Page",
+  title: "Nindo | Markdown Editor",
+  description: "The flexible Markdown Editor for modern platforms - Nindo is a highly extensible Markdown editor built for React, offering block awareness, live preview, and total control over your content.",
 }
 
 export default Page;
