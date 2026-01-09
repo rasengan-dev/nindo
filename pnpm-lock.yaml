@@ -23,6 +23,9 @@ importers:
       '@rasenganjs/theme':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
+      '@rasenganjs/vercel':
+        specifier: ^1.1.0
+        version: 1.1.0(rasengan@1.2.1-beta.0(@rasenganjs/mdx@1.2.0-beta.2(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)))
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.1.18(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2))
@@ -390,6 +393,11 @@ packages:
     resolution: {integrity: sha512-uQdZmNINss+ow/8OJtpW+OT5g7iQNIWED3XMOuTlOy2yDQBMMldo8iweXSrywAnCV1dTNuXSMciwD1ZKOgF3Qg==}
     peerDependencies:
       react: ^19.0.0
+
+  '@rasenganjs/vercel@1.1.0':
+    resolution: {integrity: sha512-U69sQAe8TowbWO5L8QUXZyjaPrDLkeQ0EzHlJ2HAJsair/uyAuoZECtLx1ICC6YuOC9NYuaVo91kqxShnH9YAQ==}
+    peerDependencies:
+      rasengan: ^1.2.0
 
   '@rolldown/pluginutils@1.0.0-beta.53':
     resolution: {integrity: sha512-vENRlFU4YbrwVqNDZ7fLvy+JR1CRkyr01jhSiDpE1u6py3OMzQfztQU2jxykW3ALNxO4kSlqIDeYyD0Y9RcQeQ==}
@@ -2527,6 +2535,11 @@ snapshots:
   '@rasenganjs/theme@1.0.1(react@19.2.3)':
     dependencies:
       react: 19.2.3
+
+  '@rasenganjs/vercel@1.1.0(rasengan@1.2.1-beta.0(@rasenganjs/mdx@1.2.0-beta.2(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)))':
+    dependencies:
+      execa: 8.0.1
+      rasengan: 1.2.1-beta.0(@rasenganjs/mdx@1.2.0-beta.2(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2))
 
   '@rolldown/pluginutils@1.0.0-beta.53': {}
 
