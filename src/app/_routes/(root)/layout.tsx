@@ -4,10 +4,10 @@ import { Outlet, LayoutComponent } from 'rasengan';
 
 const Layout: LayoutComponent = () => {
   return (
-    <section className="w-full h-full bg-background">
+    <section className="w-full h-full bg-background text-foreground">
       <Navbar />
 
-      <main className='min-h-[600px] max-w-[1200px] mx-auto py-20 px-4'>
+      <main className='h-full min-h-[600px] max-w-[1200px] mx-auto py-20 px-4'>
         <Outlet />
       </main>
       <Footer />

@@ -413,6 +413,7 @@ const EditorToolbar: React.FC<{
             variant={mappingBlockToAction(currentBlock?.type || 'paragraph', currentBlock?.level) === action.id ? "default" : "outline"}
               className={"text-foreground/70"}
               title={`${action.label}${action.shortcut ? ` (${action.shortcut})` : ''}`}
+              disabled={mode === 'preview'}
             >
               {action.icon}
             </Button>
@@ -428,6 +429,7 @@ const EditorToolbar: React.FC<{
               variant="outline"
               className="text-foreground/70"
               title={action.label}
+              disabled={mode === 'preview'}
             >
               {action.icon}
             </Button>
