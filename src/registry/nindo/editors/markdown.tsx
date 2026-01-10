@@ -89,7 +89,6 @@ const getCurrentBlock = (blocks: Block[], cursorPos: number): Block | null => {
 };
 
 const mappingBlockToAction = (block: BlockType, level?: number): ToolbarAction["id"] => {
-  console.log(block, level);
   switch (block) {
     case "heading": {
       return `h${level ? level : 0}`;

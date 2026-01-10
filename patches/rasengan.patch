@@ -1,0 +1,13 @@
+diff --git a/lib/esm/routing/utils/define-router.js b/lib/esm/routing/utils/define-router.js
+index 835319560bdacdacc1c8bb27f61eb129b2b56f96..1e9385fc4d598f0ab201e67954c41649dd2d26ee 100644
+--- a/lib/esm/routing/utils/define-router.js
++++ b/lib/esm/routing/utils/define-router.js
+@@ -80,7 +80,7 @@ const loadMDXRenderer = async () => {
+         // Dynamically import only if the package exists
+         const mod = await import('@rasenganjs/mdx');
+         //@ts-ignore
+-        const mdxConfig = await import('virtual:rasengan/mdx-components');
++        const mdxConfig = await import(`${process.cwd()}/mdx-components.js`);
+         return {
+             MDXRenderer: mod.MDXRenderer,
+             mdxConfig: mdxConfig.default,
