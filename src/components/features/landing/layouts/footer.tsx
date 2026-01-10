@@ -1,23 +1,20 @@
 import { Link } from "rasengan";
 
-export default function Footer() {
+type Props = {
+	children?: React.ReactNode
+}
+export default function Footer({ children }: Props) {
 	return (
 		<footer className="w-full h-[60px] border-t border-t-border text-sm">
-			<div className="w-full h-full max-w-[1200px] mx-auto px-4 flex items-center justify-between text-foreground/60">
-				<div>
-					<p>Built by <Link to="https://dilane3.dev" target="_blank" className="font-medium text-foreground hover:underline cursor-pointer transition-all duration-300">Dilane3</Link> at <Link to="https://github.com/rasengan-dev" target="_blank" className="font-medium text-foreground hover:underline cursor-pointer transition-all duration-300">Rasengan Labs</Link></p>
-				</div>
+			{children}
 
-				<div>
-					<ul className="flex items-center gap-4">
-						<li className="hover:text-foreground hover:underline hover:font-medium cursor-pointer transition-all duration-300">
-							<Link to="https://github.com/rasengan-dev/nindo" target="_blank">Github</Link>
-						</li>
-						<li className="hover:text-foreground hover:underline hover:font-medium cursor-pointer transition-all duration-300">
-							<Link to="/docs">Docs</Link>
-						</li>
-					</ul>
-				</div>
+			<div className="w-full h-full max-w-[1200px] mx-auto px-4 flex items-center justify-center gap-1 text-center text-sm text-foreground">
+				Built by 
+				<Link to="https://x.com/dilanekombou" target="_blank" className="font-semibold underline underline-offset-4">dilane3</Link> 
+				with 
+				<Link to="https://rasengan.dev" target="_blank" className="font-semibold underline underline-offset-4">Rasengan</Link>. 
+				The source code is available on 
+				<Link to="https://github.com/rasengan-dev/nindo" target="_blank" className="font-semibold underline underline-offset-4">GitHub</Link>.
 			</div>
 		</footer>
 	)

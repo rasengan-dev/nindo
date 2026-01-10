@@ -1,0 +1,104 @@
+---
+metadata:
+    title: Quick Start | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+import { MarkdownEditor } from "@/registry/nindo/editors/markdown";
+import Pagination from "@/components/features/docs/molecules/pagination";
+
+# Quick Start
+
+Get your first Nindo editor running in less than a minute.
+
+## Basic Setup
+
+The simplest way to use Nindo:
+```tsx title="page.tsx" showLineNumbers
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
+
+export default function Page() {
+  return (
+    <div className="h-screen">
+      <MarkdownEditor />
+    </div>
+  );
+}
+```
+
+<MarkdownEditor className="h-[500px]" />
+
+That's it! You now have a fully functional markdown editor with:
+- Live preview
+- Formatting toolbar
+- Keyboard shortcuts
+- Undo/redo support
+
+## Controlled Editor
+
+For most applications, you'll want to control the content:
+```tsx title="Controlled Editor" showLineNumbers
+import { MarkdownEditor } from '@/components/ui/markdown';
+import { useState } from 'react';
+
+export default function ControlledEditor() {
+  const [content, setContent] = useState('');
+
+  return (
+    <div className="h-screen">
+      <MarkdownEditor 
+        defaultContent={content}
+        onChangeContent={setContent}
+      />
+    </div>
+  );
+}
+```
+
+<MarkdownEditor className="h-[500px]" />
+
+## Customizing Initial Content
+
+Provide default markdown when the editor loads:
+```tsx title="page.tsx" showLineNumbers
+import { MarkdownEditor } from '@/components/ui/markdown';
+import { useState } from 'react';
+
+const defaultMarkdown = `
+# My Blog Post
+
+Write your introduction here...
+`;
+
+export default function Page() {
+	const [content, setContent] = useState(defaultMarkdown);
+
+  	return (
+		<MarkdownEditor 
+			defaultContent={defaultMarkdown} 
+			onChangeContent={setContent}
+		/>
+	);
+}
+```
+
+<MarkdownEditor 
+	defaultContent={`
+# My Blog Post
+
+Write your introduction here...
+`} 
+	className="h-[500px]" 
+/>
+
+<Pagination 
+    previous={{
+        to: "/docs/installation",
+        label: "Installation"
+    }}
+    next={{
+        to: "/docs/components/mardown-editor",
+        label: "Markdown Editor"
+    }}
+/>

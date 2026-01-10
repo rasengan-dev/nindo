@@ -1,10 +1,15 @@
 import Navbar from '@/components/features/docs/layouts/navbar';
 import Sidebar from '@/components/features/docs/layouts/sidebar';
-import { Outlet, LayoutComponent } from 'rasengan';
+import { Outlet, LayoutComponent, ScrollRestoration } from 'rasengan';
+import { useRef } from 'react';
 
 const Layout: LayoutComponent = () => {
+	const ref = useRef<HTMLDivElement>(null);
+	
   return (
     <section className="w-full h-screen bg-background overflow-hidden">
+			<ScrollRestoration target={ref} alwaysToTop /> 
+
       <div className='fixed top-0 left-0 right-0 z-30'>
         <Navbar />
     	</div>
@@ -14,7 +19,7 @@ const Layout: LayoutComponent = () => {
 					<Sidebar />
 				</div>
 
-				<main className='flex-1 overflow-y-auto'>
+				<main ref={ref} className='flex-1 h-full overflow-y-auto'>
 					<Outlet />
 				</main>
 			</section>

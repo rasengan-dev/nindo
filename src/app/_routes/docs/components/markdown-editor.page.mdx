@@ -1,0 +1,532 @@
+---
+metadata:
+    title: Markdown Editor | Components | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+import { MarkdownEditor } from "@/registry/nindo/editors/markdown";
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+
+
+# MarkdownEditor Component
+
+The `MarkdownEditor` component is the main entry point for Nindo. It provides a complete markdown editing experience with toolbar, live preview, and customizable layout options.
+
+## Import
+
+```tsx showLineNumbers
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
+```
+
+## Basic Usage
+
+```tsx showLineNumbers
+export default function Page() {
+  return <MarkdownEditor />;
+}
+```
+
+## Props
+
+### defaultContent
+
+- **Type**: `string`
+- **Default**: `""`
+- **Description**: Initial markdown content to display in the editor
+
+```tsx
+<MarkdownEditor 
+  defaultContent="# Welcome\n\nStart writing..." 
+/>
+```
+
+<Note title="Note">This is the initial value only. For controlled behavior, use with `onChangeContent`.</Note>
+
+### onChangeContent
+
+- **Type**: `(content: string) => void`
+- **Default**: `undefined`
+- **Description**: Callback fired whenever the editor content changes
+
+```tsx
+function MyEditor() {
+  const [markdown, setMarkdown] = useState('');
+
+  return (
+    <MarkdownEditor 
+      defaultContent={markdown}
+      onChangeContent={setMarkdown}
+    />
+  );
+}
+```
+
+**When is it called?**
+- User types in the textarea
+- User applies formatting via toolbar
+- User performs undo/redo
+- Content is changed programmatically via shortcuts
+
+
+### className
+
+- **Type**: `string`
+- **Default**: `undefined`
+- **Description**: Additional CSS classes to apply to the root Card container
+
+```tsx
+<MarkdownEditor 
+  className="border-2 border-blue-500 rounded-xl"
+/>
+```
+
+**Use cases:**
+- Custom height: `className="h-[600px]"`
+- Custom border: `className="border-none"`
+- Custom background: `className="bg-slate-50 dark:bg-slate-900"`
+
+## Examples
+
+### Controlled Editor with Save
+
+```tsx
+'use client';
+
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+
+export default function BlogEditor() {
+  const [content, setContent] = useState('# New Post\n\nStart writing...');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    try {
+      await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      
+      alert('Saved!');
+    } catch (error) {
+      alert('Failed to save');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4 h-screen p-4">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Blog Editor</h1>
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Post'}
+        </Button>
+      </div>
+      
+      <MarkdownEditor
+        defaultContent={content}
+        onChangeContent={setContent}
+        className="flex-1"
+      />
+    </div>
+  );
+}
+```
+
+### Custom Height
+
+```tsx
+<MarkdownEditor 
+  className="h-[800px]"
+  defaultContent="# Tall Editor"
+/>
+```
+
+### Loading Existing Content
+
+```tsx
+'use client';
+
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { useEffect, useState } from 'react';
+
+export default function EditPost({ postId }: { postId: string }) {
+  const [content, setContent] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/posts/${postId}`)
+      .then(res => res.json())
+      .then(data => {
+        setContent(data.content);
+        setIsLoading(false);
+      });
+  }, [postId]);
+
+  if (isLoading) {
+    return <div>Loading editor...</div>;
+  }
+
+  return (
+    <MarkdownEditor
+      defaultContent={content}
+      onChangeContent={setContent}
+    />
+  );
+}
+```
+
+### Multiple Editors on Same Page
+
+```tsx
+export default function ComparisonView() {
+  const [draft, setDraft] = useState('# Draft');
+  const [published, setPublished] = useState('# Published Version');
+
+  return (
+    <div className="grid grid-cols-2 gap-4 h-screen p-4">
+      <div>
+        <h2 className="text-xl font-bold mb-2">Draft</h2>
+        <MarkdownEditor
+          defaultContent={draft}
+          onChangeContent={setDraft}
+          className="h-full"
+        />
+      </div>
+      
+      <div>
+        <h2 className="text-xl font-bold mb-2">Published</h2>
+        <MarkdownEditor
+          defaultContent={published}
+          onChangeContent={setPublished}
+          className="h-full"
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+### Auto-Save Implementation
+
+```tsx
+'use client';
+
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { useState, useEffect } from 'react';
+
+export default function AutoSaveEditor() {
+  const [content, setContent] = useState('');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // Auto-save every 30 seconds
+  useEffect(() => {
+    if (!content) return;
+
+    const timer = setTimeout(async () => {
+      await fetch('/api/autosave', {
+        method: 'POST',
+        body: JSON.stringify({ content })
+      });
+      
+      setLastSaved(new Date());
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, [content]);
+
+  return (
+    <div className="h-screen flex flex-col p-4">
+      <div className="mb-2 text-sm text-muted-foreground">
+        {lastSaved 
+          ? `Last saved: ${lastSaved.toLocaleTimeString()}` 
+          : 'Not saved yet'}
+      </div>
+      
+      <MarkdownEditor
+        defaultContent={content}
+        onChangeContent={setContent}
+        className="flex-1"
+      />
+    </div>
+  );
+}
+```
+
+### With Character Limit
+
+```tsx
+'use client';
+
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { useState } from 'react';
+
+export default function LimitedEditor() {
+  const [content, setContent] = useState('');
+  const MAX_CHARS = 5000;
+
+  const handleChange = (newContent: string) => {
+    if (newContent.length <= MAX_CHARS) {
+      setContent(newContent);
+    }
+  };
+
+  const remaining = MAX_CHARS - content.length;
+
+  return (
+    <div className="flex flex-col gap-2 h-screen p-4">
+      <div className="text-sm">
+        <span className={remaining < 100 ? 'text-red-500' : 'text-muted-foreground'}>
+          {remaining} characters remaining
+        </span>
+      </div>
+      
+      <MarkdownEditor
+        defaultContent={content}
+        onChangeContent={handleChange}
+        className="flex-1"
+      />
+    </div>
+  );
+}
+```
+
+### Dark Mode Support
+
+The editor automatically supports dark mode when using Tailwind's dark mode:
+
+```tsx
+<div className="dark">
+  <MarkdownEditor />
+</div>
+```
+
+## Component Structure
+
+The `MarkdownEditor` component is composed of several sub-components:
+
+```tsx
+<Card>                          {/* Root container */}
+  <Editor.Toolbar />            {/* Formatting toolbar */}
+  
+  <div>                         {/* Editor/Preview container */}
+    <Card>
+      <Editor.Core />           {/* Textarea editor */}
+    </Card>
+    
+    <Card>
+      <Editor.Preview />        {/* Markdown preview */}
+    </Card>
+  </div>
+  
+  <div>                         {/* Footer stats */}
+    {/* Block type, line count, char count */}
+  </div>
+</Card>
+```
+
+## Built-in Features
+
+### View Modes
+
+The editor supports three view modes (controlled via toolbar):
+
+1. **Edit** - Only the textarea editor is visible
+2. **Preview** - Only the rendered preview is visible
+3. **Split** (default) - Both editor and preview side-by-side
+
+### Layout Orientation
+
+The editor supports two layout orientations:
+
+1. **Horizontal** (default) - Editor and preview side-by-side
+2. **Vertical** - Editor and preview stacked
+
+Users can toggle between orientations using the toolbar button.
+
+### Toolbar Actions
+
+Built-in formatting actions:
+- **Bold** (`**text**`) - Ctrl/Cmd + B
+- **Italic** (`_text_`) - Ctrl/Cmd + I
+- **Inline Code** (`` `code` ``)
+- **Link** (`[text](url)`) - Ctrl/Cmd + K
+- **Heading 1** (`# text`)
+- **Heading 2** (`## text`)
+- **Heading 3** (`### text`)
+- **Quote** (`> text`)
+- **Code Block** (` ```code``` `)
+
+### Keyboard Shortcuts
+
+- `#` + Space → Heading 1
+- `##` + Space → Heading 2
+- `###` + Space → Heading 3
+- `-` + Space → List item
+- `>` + Space → Quote
+- ` ``` ` + Space → Code block
+- Ctrl/Cmd + Z → Undo
+- Ctrl/Cmd + Shift + Z → Redo
+
+### Auto-Pairing
+
+Automatically pairs these characters:
+- `**` → `****` (for bold)
+- `_` → `__` (for italic)
+- `` ` `` → ` `` ` (for code)
+- `[` → `[]`
+- `(` → `()`
+- `{` → `{}`
+- `"` → `""`
+- `'` → `''`
+
+### History
+
+- Unlimited undo/redo
+- Preserved across formatting actions
+- Keyboard shortcuts (Ctrl/Cmd + Z, Ctrl/Cmd + Shift + Z)
+
+### Footer Stats
+
+Automatically displays:
+- Current block type (paragraph, heading, code, quote, list)
+- For headings: shows level (H1, H2, H3)
+- Total line count
+- Total character count
+
+## Styling & Customization
+
+### Custom Height
+
+```tsx
+<MarkdownEditor className="h-[500px]" />
+```
+
+### Custom Width
+
+```tsx
+<MarkdownEditor className="max-w-4xl mx-auto" />
+```
+
+### Custom Border
+
+```tsx
+<MarkdownEditor className="border-2 border-primary rounded-2xl" />
+```
+
+### Full Screen
+
+```tsx
+<MarkdownEditor className="h-screen w-screen" />
+```
+
+### Custom Background
+
+```tsx
+<MarkdownEditor className="bg-gradient-to-br from-purple-50 to-pink-50" />
+```
+
+---
+
+## TypeScript Support
+
+The component is fully typed:
+
+```tsx
+interface MarkdownEditorProps {
+  defaultContent?: string;
+  onChangeContent?: (content: string) => void;
+  className?: string;
+}
+```
+
+You get full IntelliSense and type checking:
+
+```tsx
+<MarkdownEditor
+  defaultContent="# Hello"    // ✅ string
+  onChangeContent={(content) => {
+    content // ✅ string (typed automatically)
+  }}
+  className="h-full"          // ✅ string
+/>
+```
+
+## Accessibility
+
+The editor includes:
+- ✅ Keyboard navigation support
+- ✅ Screen reader friendly
+- ✅ ARIA labels on toolbar buttons
+- ✅ Focus management
+- ✅ Tab order preservation
+
+## Performance Considerations
+
+### Memoization
+
+The editor uses React.memo and useMemo to prevent unnecessary re-renders:
+- Block parsing is memoized
+- Current block detection is memoized
+- Toolbar actions are memoized
+
+### Large Documents
+
+For documents > 1000 lines:
+- Consider debouncing `onChangeContent`
+- Implement virtual scrolling (future feature)
+- Use Web Workers for parsing (future feature)
+
+Example debounced handler:
+
+```tsx
+import { useDebouncedCallback } from 'use-debounce';
+
+const debouncedSave = useDebouncedCallback(
+  (content: string) => {
+    // Save to backend
+  },
+  1000
+);
+
+<MarkdownEditor 
+  onChangeContent={debouncedSave}
+/>
+```
+
+## Common Patterns
+
+### Read-Only Mode
+
+To create a read-only viewer, use [Editor.Preview](/docs/components/editor-preview) component instead.
+
+```tsx
+// You'll need to modify the component to hide the toolbar
+// or create a separate Preview component
+import { Editor } from '@/components/ui/markdown-editor';
+
+<Editor.Preview content={markdownContent} />
+```
+
+### Custom Toolbar
+
+See [Toolbar Actions](/docs/customization/custom-toolbar) for how to add custom buttons.
+
+
+
+<Pagination 
+    previous={{
+        to: "/docs/quick-start",
+        label: "Quick Start"
+    }}
+    next={{
+        to: "/docs/components/editor-core",
+        label: "Editor Core"
+    }}
+/>

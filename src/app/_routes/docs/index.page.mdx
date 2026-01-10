@@ -1,21 +1,20 @@
 ---
 metadata:
-    title: Introduction
-    description: shadcn/ui is a set of beautifully-designed, accessible components and a code distribution platform. Works with your favorite frameworks and AI models. Open Source. Open Code.
+    title: Introduction | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
 toc: true
 ---
 
+import Pagination from "@/components/features/docs/molecules/pagination";
+
 # Introduction
 
-Nindo is a modern, extensible Markdown editor built with React. Inspired by Medium, Notion, and Obsidian, it provides a seamless writing experience with live preview, keyboard shortcuts, and a powerful block-based architecture.
-
-eg. [https://v0.dev/chat/api/open?url=https://ui.shadcn.com/r/styles/new-york/login-01.json](https://v0.dev/chat/api/open?url=https://ui.shadcn.com/r/styles/new-york/login-01.json)
+Nindo is a modern, extensible Markdown editor built with [React](https://reactjs.org) and powered by [Shadcn UI](https://ui.shadcn.com). it provides a seamless writing experience with live preview, keyboard shortcuts, and a powerful block-based architecture.
 
 ## Why Nindo?
 
 - **Markdown-First**: Write in plain text, see rich results in real-time
 - **Lightweight**: Minimal dependencies, maximum performance
-- **Extensible**: Plugin system for custom functionality
 - **Customizable**: Full theming support with Tailwind CSS
 - **Production-Ready**: Built for real-world blogging platforms and CMSs
 - **Keyboard-First**: Extensive shortcuts for power users
@@ -23,11 +22,11 @@ eg. [https://v0.dev/chat/api/open?url=https://ui.shadcn.com/r/styles/new-york/lo
 ## Key Features
 
 ### Live Preview
-Real-time markdown rendering powered by `@rasenganjs/mdx`, displayed side-by-side with your editor.
+Real-time markdown rendering powered by [react-markdown](https://github.com/remarkjs/react-markdown), displayed side-by-side with your editor.
 You can use another tool to preview markdown, it's opt to you.
 
 ### Block-Based Architecture
-Every line of markdown is parsed into a block (heading, paragraph, code, quote, list), enabling context-aware toolbars and smart operations.
+Every line of markdown is parsed into a block (**heading**, **paragraph**, **code**, **quote**, **list**), enabling context-aware toolbars and smart operations.
 
 ### Smart Shortcuts
 Type `#` + `Space` for headings, `-` + `Space` for lists, and more. Auto-pairing for brackets, quotes, and markdown syntax.
@@ -51,4 +50,11 @@ Nindo follows a **textarea-first approach** instead of contentEditable, providin
 - Native undo/redo support
 - Easy integration with any React application
 
-Ready to get started? Let's install Nindo!
+Ready to get started? Let's [configure Nindo!](./docs/installation)
+
+<Pagination 
+    next={{
+        to: "/docs/installation",
+        label: "Installation"
+    }}
+/>

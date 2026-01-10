@@ -1,0 +1,803 @@
+---
+metadata:
+    title: Editor Core | Components | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+import { Editor } from "@/registry/nindo/editors/markdown";
+import StandaloneEditorCore from "@/components/features/docs/organisms/editors/core/standalone";
+import FocusableEditorCore from "@/components/features/docs/organisms/editors/core/programmatic-focus";
+import InsertTextEditorCore from "@/components/features/docs/organisms/editors/core/insert-text";
+import CountedEditorCore from "@/components/features/docs/organisms/editors/core/counter-characters";
+import UndoEditorCore from "@/components/features/docs/organisms/editors/core/undo-redo";
+import FindReplaceEditorCore from "@/components/features/docs/organisms/editors/core/find-replace";
+import LineNumbersEditorCore from "@/components/features/docs/organisms/editors/core/line-numbers";
+
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+import Preview from "@/components/features/docs/molecules/preview";
+
+
+# EditorCore Component
+
+The `EditorCore` component is the textarea input wrapper that handles all user text input, selection tracking, and keyboard interactions. It's the heart of Nindo's editing experience.
+
+## Import
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+// Use as
+<Editor.Core />
+```
+
+## Overview
+
+`EditorCore` wraps a native HTML `<textarea>` element with:
+- Content synchronization
+- Selection/cursor tracking
+- Keyboard event handling
+- Styling and placeholder support
+
+### Why textarea over contentEditable ?
+- Predictable cursor behavior across all browsers
+- Native undo/redo support
+- No DOM manipulation bugs
+- Better accessibility
+- Simpler state management
+
+
+
+## Props
+
+### content
+
+- **Type**: `string`
+- **Required**: Yes
+- **Description**: The current markdown content to display in the textarea
+
+```tsx showLineNumbers
+<Editor.Core
+  content="# Hello World"
+  onChange={handleChange}
+  onSelectionChange={handleSelection}
+  textareaRef={textareaRef}
+/>
+```
+
+
+
+### onChange
+
+- **Type**: `(content: string) => void`
+- **Required**: Yes
+- **Description**: Callback fired when the textarea content changes
+
+```tsx showLineNumbers
+const [markdown, setMarkdown] = useState('');
+
+<Editor.Core
+  content={markdown}
+  onChange={setMarkdown}
+  onSelectionChange={handleSelection}
+  textareaRef={textareaRef}
+/>
+```
+
+**When is it called?**
+- User types or deletes text
+- User pastes content
+- User cuts content
+- Content is changed programmatically
+
+
+
+### onSelectionChange
+
+- **Type**: `(selection: SelectionState) => void`
+- **Required**: Yes
+- **Description**: Callback fired when the cursor position or text selection changes
+
+```tsx showLineNumbers
+interface SelectionState {
+  start: number;  // Starting position of selection
+  end: number;    // Ending position of selection
+}
+
+const handleSelectionChange = (selection: SelectionState) => {
+  console.log('Cursor at:', selection.start);
+  console.log('Selection length:', selection.end - selection.start);
+};
+
+<Editor.Core
+  content={content}
+  onChange={handleChange}
+  onSelectionChange={handleSelectionChange}
+  textareaRef={textareaRef}
+/>
+```
+
+**When is it called?**
+- User clicks to move cursor
+- User selects text with mouse or keyboard
+- User presses arrow keys
+- Text selection changes after typing
+
+
+
+### textareaRef
+
+- **Type**: `React.RefObject<HTMLTextAreaElement | null>`
+- **Required**: Yes
+- **Description**: React ref to the underlying textarea element
+
+```tsx showLineNumbers
+const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+<Editor.Core
+  content={content}
+  onChange={handleChange}
+  onSelectionChange={handleSelection}
+  textareaRef={textareaRef}
+/>
+
+// Access the textarea DOM element
+textareaRef.current?.focus();
+textareaRef.current?.setSelectionRange(0, 10);
+```
+
+**Common use cases:**
+- Programmatically focus the textarea
+- Set cursor position after formatting
+- Scroll to specific position
+- Get textarea dimensions
+
+
+
+### placeholder
+
+- **Type**: `string`
+- **Optional**: Yes
+- **Default**: `"Start writing your markdown..."`
+- **Description**: Placeholder text shown when textarea is empty
+
+```tsx showLineNumbers
+<Editor.Core
+  content={content}
+  onChange={handleChange}
+  onSelectionChange={handleSelection}
+  textareaRef={textareaRef}
+  placeholder="Write your blog post here..."
+/>
+```
+
+
+
+### className
+
+- **Type**: `string`
+- **Optional**: Yes
+- **Description**: Additional CSS classes for the wrapper div
+
+```tsx showLineNumbers
+<Editor.Core
+  content={content}
+  onChange={handleChange}
+  onSelectionChange={handleSelection}
+  textareaRef={textareaRef}
+  className="border-l-4 border-blue-500"
+/>
+```
+
+
+
+## Basic Usage
+
+<Note
+    title="Note:"
+>
+The following examples will handle everything manually just to know how it works. But if you want something more clean and easier consider coupling `Editor.Core` with [useEditor](/docs/components/editor-core#integration-with-useeditor-hook) hook.
+</Note>
+
+### Standalone Editor
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useState, useRef } from 'react';
+
+export default function StandaloneEditorCore() {
+  const [content, setContent] = useState('');
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+ 
+  return (
+    <div className="h-auto">
+      <Editor.Core
+        content={content}
+        onChange={setContent}
+        onSelectionChange={setSelection}
+        textareaRef={textareaRef}
+        placeholder="Start writing..."
+      />
+      
+      <div className="p-4 border-t flex items-center gap-4 text-sm">
+        <p>Characters: {content.length}</p>
+        <p>Cursor at: {selection.start}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+<Preview>
+    <StandaloneEditorCore />
+</Preview>
+
+
+### With Custom Styling
+
+```tsx showLineNumbers
+<Editor.Core
+  content={content}
+  onChange={setContent}
+  onSelectionChange={setSelection}
+  textareaRef={textareaRef}
+  className="bg-slate-50 dark:bg-slate-900"
+/>
+```
+
+
+
+### Programmatic Focus
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { Button } from '@/components/ui/button';
+import { useRef, useState } from 'react';
+
+export default function FocusableEditor() {
+  const [content, setContent] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const focusEditor = () => {
+    textareaRef.current?.focus();
+    
+    // Optionally, move cursor to end
+    const length = content.length;
+    textareaRef.current?.setSelectionRange(length, length);
+  };
+
+  return (
+    <div className="h-screen flex flex-col gap-4 p-4">
+      <Button onClick={focusEditor}>
+        Focus Editor
+      </Button>
+      
+      <Editor.Core
+        content={content}
+        onChange={setContent}
+        onSelectionChange={() => {}}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+<Preview>
+    <FocusableEditorCore />
+</Preview>
+
+
+### Insert Text at Cursor
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { Button } from '@/components/ui/button';
+import { useRef, useState } from 'react';
+
+export default function InsertTextEditor() {
+  const [content, setContent] = useState('');
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertText = (text: string) => {
+    const { start, end } = selection;
+    const before = content.slice(0, start);
+    const after = content.slice(end);
+    
+    const newContent = before + text + after;
+    setContent(newContent);
+    
+    // Move cursor after inserted text
+    setTimeout(() => {
+      const newPosition = start + text.length;
+      textareaRef.current?.setSelectionRange(newPosition, newPosition);
+      textareaRef.current?.focus();
+    }, 0);
+  };
+
+  return (
+    <div className="h-screen flex flex-col gap-4 p-4">
+      <div className="flex gap-2">
+        <Button onClick={() => insertText('**bold text**')}>
+          Insert Bold
+        </Button>
+        <Button onClick={() => insertText('[link](url)')}>
+          Insert Link
+        </Button>
+        <Button onClick={() => insertText('```\ncode\n```')}>
+          Insert Code
+        </Button>
+      </div>
+      
+      <Editor.Core
+        content={content}
+        onChange={setContent}
+        onSelectionChange={setSelection}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+<Preview>
+    <InsertTextEditorCore />
+</Preview>
+
+
+### With Character Counter
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useState, useRef } from 'react';
+
+export default function CountedEditor() {
+  const [content, setContent] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  const MAX_LENGTH = 5000;
+  const remaining = MAX_LENGTH - content.length;
+
+  const handleChange = (newContent: string) => {
+    if (newContent.length <= MAX_LENGTH) {
+      setContent(newContent);
+    }
+  };
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div className="border-b p-2 text-sm">
+        <span className={remaining < 100 ? 'text-red-500' : 'text-muted-foreground'}>
+          {remaining} / {MAX_LENGTH}
+        </span>
+      </div>
+      
+      <Editor.Core
+        content={content}
+        onChange={handleChange}
+        onSelectionChange={() => {}}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+<Preview>
+    <CountedEditorCore />
+</Preview>
+<UndoEditorCore />
+
+### Read-Only Mode
+
+```tsx showLineNumbers
+<Editor.Core
+  content={content}
+  onChange={() => {}} // No-op
+  onSelectionChange={() => {}}
+  textareaRef={textareaRef}
+  className="pointer-events-none opacity-60"
+/>
+```
+
+## Selection Tracking
+
+The `onSelectionChange` callback provides detailed cursor/selection information:
+
+```tsx showLineNumbers
+const handleSelectionChange = (selection: SelectionState) => {
+  const { start, end } = selection;
+  
+  // Cursor position (when start === end)
+  if (start === end) {
+    console.log(`Cursor at position ${start}`);
+  }
+  
+  // Text selection
+  else {
+    const selectedText = content.slice(start, end);
+    console.log(`Selected: "${selectedText}"`);
+    console.log(`Length: ${end - start} characters`);
+  }
+};
+
+<Editor.Core
+  content={content}
+  onChange={setContent}
+  onSelectionChange={handleSelectionChange}
+  textareaRef={textareaRef}
+/>
+```
+
+
+
+## Common Use Cases
+
+### Auto-Save Implementation
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useState, useEffect, useRef } from 'react';
+
+export default function AutoSaveEditor() {
+  const [content, setContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!content) return;
+      
+      setIsSaving(true);
+      
+      try {
+        await fetch('/api/save', {
+          method: 'POST',
+          body: JSON.stringify({ content })
+        });
+      } finally {
+        setIsSaving(false);
+      }
+    }, 2000); // Auto-save after 2 seconds of inactivity
+
+    return () => clearTimeout(timer);
+  }, [content]);
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div className="border-b p-2 text-sm text-muted-foreground">
+        {isSaving ? 'Saving...' : 'All changes saved'}
+      </div>
+      
+      <Editor.Core
+        content={content}
+        onChange={setContent}
+        onSelectionChange={() => {}}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+
+
+### Undo/Redo Implementation
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { Button } from '@/components/ui/button';
+import { useState, useRef } from 'react';
+
+export default function UndoEditor() {
+  const [content, setContent] = useState('');
+  const [history, setHistory] = useState(['']);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleChange = (newContent: string) => {
+    setContent(newContent);
+    setHistory(prev => [...prev.slice(0, historyIndex + 1), newContent]);
+    setHistoryIndex(prev => prev + 1);
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(prev => prev - 1);
+      setContent(history[historyIndex - 1]);
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(prev => prev + 1);
+      setContent(history[historyIndex + 1]);
+    }
+  };
+
+  return (
+    <div className="h-screen flex flex-col gap-4 p-4">
+      <div className="flex gap-2">
+        <Button onClick={undo} disabled={historyIndex === 0}>
+          Undo
+        </Button>
+        <Button onClick={redo} disabled={historyIndex === history.length - 1}>
+          Redo
+        </Button>
+      </div>
+      
+      <Editor.Core
+        content={content}
+        onChange={handleChange}
+        onSelectionChange={() => {}}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+
+<Preview>
+    <UndoEditorCore />
+</Preview>
+
+
+### Find and Replace
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useState, useRef } from 'react';
+
+export default function FindReplaceEditor() {
+  const [content, setContent] = useState('');
+  const [findText, setFindText] = useState('');
+  const [replaceText, setReplaceText] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleReplace = () => {
+    const newContent = content.replace(new RegExp(findText, 'g'), replaceText);
+    setContent(newContent);
+  };
+
+  const highlightNext = () => {
+    const index = content.indexOf(findText);
+    if (index !== -1) {
+      textareaRef.current?.setSelectionRange(index, index + findText.length);
+      textareaRef.current?.focus();
+    }
+  };
+
+  return (
+    <div className="h-screen flex flex-col gap-4 p-4">
+      <div className="flex gap-2">
+        <Input
+          placeholder="Find..."
+          value={findText}
+          onChange={(e) => setFindText(e.target.value)}
+        />
+        <Input
+          placeholder="Replace with..."
+          value={replaceText}
+          onChange={(e) => setReplaceText(e.target.value)}
+        />
+        <Button onClick={highlightNext}>Find</Button>
+        <Button onClick={handleReplace}>Replace All</Button>
+      </div>
+      
+      <Editor.Core
+        content={content}
+        onChange={setContent}
+        onSelectionChange={() => {}}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+<Preview>
+    <FindReplaceEditorCore />
+</Preview>
+
+
+## Accessibility
+
+The `EditorCore` component includes:
+
+- ✅ Native textarea semantics (accessible by default)
+- ✅ Keyboard navigation (arrow keys, Tab, etc.)
+- ✅ Screen reader support
+- ✅ Placeholder text for empty state
+- ✅ Focus management
+
+**Additional ARIA attributes (if needed):**
+
+```tsx showLineNumbers
+<textarea
+  ref={textareaRef}
+  aria-label="Markdown editor"
+  aria-describedby="editor-description"
+  // ... other props
+/>
+
+<p id="editor-description" className="sr-only">
+  Write your markdown content here. Use # for headings, ** for bold, etc.
+</p>
+```
+
+
+
+## Performance Considerations
+
+### Large Documents
+
+For documents with 1000+ lines:
+
+1. **Debounce onChange**:
+
+```tsx showLineNumbers
+import { useDebouncedCallback } from 'use-debounce';
+
+const debouncedChange = useDebouncedCallback(
+  (content: string) => {
+    setContent(content);
+  },
+  100
+);
+
+<Editor.Core
+  content={content}
+  onChange={debouncedChange}
+  onSelectionChange={() => {}}
+  textareaRef={textareaRef}
+/>
+```
+
+2. **Throttle onSelectionChange**:
+
+```tsx showLineNumbers
+import { throttle } from 'lodash';
+
+const throttledSelection = throttle(
+  (selection: SelectionState) => {
+    setSelection(selection);
+  },
+  100
+);
+```
+
+
+
+### Memory Optimization
+
+For very long editing sessions, consider:
+- Limiting history size (keep last 50 changes)
+- Implementing pagination for history
+- Using IndexedDB for persistent storage
+
+
+
+## Troubleshooting
+
+### Cursor jumping when typing
+
+**Problem**: Cursor jumps to end of textarea
+
+**Solution**: Ensure `content` prop and `onChange` are stable:
+
+```tsx showLineNumbers
+// ❌ Bad: Creates new reference each render
+<Editor.Core
+  content={content}
+  onChange={(c) => setContent(c)}
+  onSelectionChange={() => {}}
+  textareaRef={textareaRef}
+/>
+
+// ✅ Good: Stable reference
+<Editor.Core
+  content={content}
+  onChange={setContent}
+  onSelectionChange={setSelection}
+  textareaRef={textareaRef}
+/>
+```
+
+
+
+### Selection not updating
+
+**Problem**: `onSelectionChange` not firing
+
+**Solution**: The callback fires on `onSelect`, `onClick`, and `onKeyUp`. Ensure you're not preventing these events:
+
+```tsx showLineNumbers
+// Make sure no parent is stopping event propagation
+<div onClick={(e) => e.stopPropagation()}> {/* ❌ Bad */}
+  <Editor.Core ... />
+</div>
+```
+
+
+
+### Ref is null
+
+**Problem**: `textareaRef.current` is null
+
+**Solution**: Ensure you're accessing ref after component mounts:
+
+```tsx showLineNumbers
+useEffect(() => {
+  // ✅ Safe: Ref is guaranteed to be set
+  if (textareaRef.current) {
+    textareaRef.current.focus();
+  }
+}, []);
+
+// ❌ Unsafe: Ref might not be set yet
+const handleClick = () => {
+  textareaRef.current?.focus(); // Might be null on first render
+};
+```
+
+
+
+## Integration with useEditor Hook
+
+`Editor.Core` works seamlessly with the `useEditor` hook:
+
+```tsx showLineNumbers
+import { Editor, useEditor } from '@/components/ui/markdown-editor';
+
+export default function IntegratedEditor() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  const {
+    content,
+    selection,
+    updateContent,
+    setSelection
+  } = useEditor('# Initial content');
+
+  return (
+    <Editor.Core
+      content={content}
+      onChange={updateContent}
+      onSelectionChange={setSelection}
+      textareaRef={textareaRef}
+    />
+  );
+}
+```
+
+
+<Pagination 
+    previous={{
+       to: "/docs/components/markdown-editor",
+        label: "Markdown Editor"
+    }}
+    next={{
+        to: "/docs/components/editor-preview",
+        label: "Editor Preview"
+    }}
+/>

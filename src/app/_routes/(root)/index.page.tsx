@@ -1,7 +1,40 @@
 import { Button } from '@/components/common/ui/button';
 import { MarkdownEditor } from '@/registry/nindo/editors/markdown';
 import { Copy, ArrowRight } from 'lucide-react';
-import { PageComponent } from 'rasengan';
+import { Link, PageComponent } from 'rasengan';
+
+const markdown = `
+# Welcome to the Nindo Editor
+
+Start writing your **markdown** content here.
+
+## Features
+
+- Live preview
+- Keyboard shortcuts
+- Block-based editing
+- Extensible architecture
+
+## Installation
+
+\`\`\`bash
+npx shadcn-ui@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
+\`\`\`
+
+## Usage
+
+\`\`\`jsx
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
+
+export default function Page() {
+	return <MarkdownEditor />
+}
+\`\`\`
+
+> This is a quote block
+
+Happy writing! ✨
+`
 
 const Page: PageComponent = () => {
   return (
@@ -27,10 +60,12 @@ const Page: PageComponent = () => {
         </div> */}
 
         <div className="mt-8">
-          <Button className="px-4 bg-primary text-primary-foreground hover:bg-primary/90">
-            <span className="font-medium text-base text-sm">Get Started</span>
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="/docs">
+            <Button className="px-4 bg-primary text-primary-foreground hover:bg-primary/90">
+              <span className="font-medium text-base text-sm">Get Started</span>
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
           
           <Button variant="outline" className="ml-4 text-foreground">
             <span className="font-medium text-base text-sm">View Demo</span>
@@ -41,7 +76,7 @@ const Page: PageComponent = () => {
 
       <div className='mt-20 w-full'>
         <div className='w-full h-[calc(100vh-200px)]'>
-          <MarkdownEditor />
+          <MarkdownEditor defaultContent={markdown} className='h-full' />
         </div>
       </div>
     </section>

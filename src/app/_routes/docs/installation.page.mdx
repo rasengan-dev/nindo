@@ -1,52 +1,44 @@
+---
+metadata:
+    title: Installation | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+import { MarkdownEditor } from "@/registry/nindo/editors/markdown";
+import Pagination from "@/components/features/docs/molecules/pagination";
+
 # Installation
 
-Nindo is distributed as a shadcn/ui-style registry component. This means you get a single, self-contained file that you can customize to your needs.
+Nindo is distributed as a [shadcn/ui](https://ui.shadcn.com) style registry component. This means you get a single, self-contained file that you can customize to your needs.
 
 ## Prerequisites
 
 Before installing Nindo, ensure you have:
 
-- React 18+ 
-- TypeScript (recommended)
-- Tailwind CSS configured
-- `shadcn/ui` components (Button, Card)
-- `Lucide React` installed
+- [Tailwind CSS](https://tailwindcss.com/docs/installation/using-vite) configured
+- [shadcn/ui](https://ui.shadcn.com/docs/installation) configured
+- [Typescript](https://typescriptlang.org) recommended
 
-## Installation Methods
+## Setup 
 
-### Method 1: Using shadcn CLI (Recommended)
-```bash
-npx shadcn-ui@latest add https://nindo.dev/registry/markdown.json
+```bash title="Terminal"
+npx shadcn-ui@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
 ```
 
-This will:
-- Download the `markdown.tsx` component
-- Place it in your `components/ui` directory
-- Install required dependencies
+This command will:
+- Download the `markdown-editor.tsx` file
+- Download required `shadcn ui` components like `button` and `card`.
+- Place them all in your `components/ui` directory
+- Install required dependencies such as [react-markdown](https://github.com/remarkjs/react-markdown), [lucide-react](https://lucide.dev), [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter), [@rasenganjs/theme](https://rasengan.dev/packages/theme) and others
 
-### Method 2: Manual Installation
 
-1. **Copy the component file**
+## Usage
 
-Create `components/ui/markdown.tsx` and copy the Nindo source code.
+```tsx title="Markdown Editor"
+import { MarkdownEditor } from '@/components/ui/markdown-editor';
 
-2. **Install dependencies**
-```bash
-npm install lucide-react @rasenganjs/mdx
-```
-
-3. **Ensure shadcn/ui components are installed**
-```bash
-npx shadcn-ui@latest add button card
-```
-
-## Verify Installation
-
-Create a test page:
-```tsx
-import { MarkdownEditor } from '@/components/ui/markdown';
-
-export default function TestPage() {
+export default function Page() {
   return (
     <div className="container mx-auto p-8">
       <MarkdownEditor />
@@ -55,24 +47,18 @@ export default function TestPage() {
 }
 ```
 
+<MarkdownEditor className="h-[500px]" />
+
 If you see the editor with toolbar and preview, you're good to go! 🎉
 
-## Troubleshooting
 
-**Issue**: `@rasenganjs/mdx` not found
-
-**Solution**: Install it manually:
-```bash
-npm install @rasenganjs/mdx
-```
-
-**Issue**: Button/Card components not styled
-
-**Solution**: Ensure Tailwind CSS is configured and shadcn/ui is properly set up:
-```bash
-npx shadcn-ui@latest init
-```
-
-## Next Steps
-
-Now that Nindo is installed, let's create your first editor in the [Quick Start](#quick-start) guide.
+<Pagination 
+    previous={{
+        to: "/docs",
+        label: "Introduction"
+    }}
+    next={{
+        to: "/docs/quick-start",
+        label: "Quick Start"
+    }}
+/>
