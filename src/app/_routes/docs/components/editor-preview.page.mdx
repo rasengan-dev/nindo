@@ -1,0 +1,702 @@
+---
+metadata:
+    title: Editor.Preview | Components | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+import { Editor } from "@/registry/nindo/editors/markdown";
+
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+import Preview from "@/components/features/docs/molecules/preview";
+
+# Editor.Preview Component
+
+The `Editor.Preview` component renders the live markdown preview with syntax highlighting, custom styling, and interactive features like code block copying.
+
+## Import
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+// Use as
+<Editor.Preview />
+```
+
+## Overview
+
+`Editor.Preview` takes raw markdown content and renders it as beautifully styled HTML using:
+- `react-markdown` for markdown parsing
+- `remark-gfm` for GitHub Flavored Markdown support
+- `react-syntax-highlighter` for code syntax highlighting
+- Custom typography components for consistent styling
+
+
+
+## Props
+
+### `content`
+
+- **Type**: `string`
+- **Required**: Yes
+- **Description**: The raw markdown content to render as HTML
+
+```tsx showLineNumbers
+<Editor.Preview content="# Hello World\n\nThis is **bold** text." />
+```
+
+**Supported Markdown Features:**
+- Headings (H1-H6)
+- Bold (`**text**`) and italic (`_text_`)
+- Links (`[text](url)`)
+- Lists (ordered and unordered)
+- Code blocks with syntax highlighting
+- Inline code
+- Blockquotes
+- Tables (via GFM)
+- Strikethrough (via GFM)
+- Task lists (via GFM)
+
+
+
+### `dark`
+
+- **Type**: `boolean`
+- **Optional**: Yes
+- **Default**: `false`
+- **Description**: Enables dark mode syntax highlighting for code blocks
+
+```tsx showLineNumbers
+// Light mode (default)
+<Editor.Preview content={markdown} />
+
+// Dark mode
+<Editor.Preview content={markdown} dark={true} />
+```
+
+**Effect:**
+- `false` → Uses `oneLight` syntax highlighting theme
+- `true` → Uses `oneDark` syntax highlighting theme
+
+
+
+## Basic Usage
+
+### Simple Preview
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+export default function PreviewDemo() {
+  const markdown = `
+# Welcome to Nindo
+
+This is a **markdown** preview with _formatting_.
+
+## Features
+
+- Live rendering
+- Syntax highlighting
+- Copy code button
+`;
+
+  return (
+    <div className="h-screen">
+      <Editor.Preview content={markdown} />
+    </div>
+  );
+}
+```
+
+### With State
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useState } from 'react';
+
+export default function LivePreview() {
+  const [content, setContent] = useState('# Start typing...');
+
+  return (
+    <div className="grid grid-cols-2 gap-4 h-screen p-4">
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="p-4 border rounded-lg font-mono"
+      />
+      
+      <Editor.Preview content={content} />
+    </div>
+  );
+}
+```
+
+
+
+### Dark Mode Integration
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useTheme } from '@rasenganjs/theme';
+
+export default function ThemedPreview() {
+  const { isDark } = useTheme();
+  const markdown = '# Hello World\n\n```javascript\nconst x = 10;\n```';
+
+  return (
+    <Editor.Preview 
+      content={markdown} 
+      dark={isDark}
+    />
+  );
+}
+```
+
+
+
+### Read-Only Markdown Viewer
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+export default function ArticleViewer({ article }: { article: string }) {
+  return (
+    <div className="container mx-auto py-8">
+      <Editor.Preview content={article} />
+    </div>
+  );
+}
+```
+
+
+
+## Rendered Elements
+
+The preview component renders markdown with custom styled components:
+
+### Headings
+
+```markdown
+# H1 Heading
+## H2 Heading
+### H3 Heading
+#### H4 Heading
+##### H5 Heading
+###### H6 Heading
+```
+
+**Styles:**
+- H1: `text-4xl font-semibold mt-4 mb-5` (responsive: `sm:text-3xl`)
+- H2: `text-xl font-medium mt-8 mb-3`
+- H3-H6: `text-lg/md font-medium mt-8 mb-3`
+
+
+
+### Paragraphs
+
+```markdown
+This is a paragraph with **bold** and _italic_ text.
+```
+
+**Styles:**
+- `text-sm font-medium leading-relaxed`
+- First paragraph has no top margin
+- Subsequent paragraphs: `mt-6`
+
+
+
+### Links
+
+```markdown
+[Click here](https://example.com)
+```
+
+**Styles:**
+- `text-primary font-semibold underline underline-offset-4 cursor-pointer`
+- Automatically styled with primary theme color
+
+
+
+### Lists
+
+**Unordered:**
+```markdown
+- Item 1
+- Item 2
+- Item 3
+```
+
+**Ordered:**
+```markdown
+1. First
+2. Second
+3. Third
+```
+
+**Styles:**
+- Container: `my-6 ml-6 list-decimal`
+- List items: `mt-2 text-sm font-medium`
+
+
+
+### Blockquotes
+
+```markdown
+> This is a quote
+> with multiple lines
+```
+
+**Styles:**
+- `inline-block pl-2 border-l-4 border-l-border`
+- Left border accent for visual distinction
+
+
+
+### Inline Code
+
+```markdown
+Use `const x = 10;` for inline code.
+```
+
+**Styles:**
+- `bg-muted rounded-md px-[0.3rem] py-[0.2rem] font-mono text-[0.9rem]`
+- Subtle background with rounded corners
+
+
+
+### Code Blocks
+
+````markdown
+```javascript
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+}
+```
+````
+
+**Features:**
+- ✅ Syntax highlighting for 180+ languages
+- ✅ Language label in header
+- ✅ Copy to clipboard button
+- ✅ Line numbers
+- ✅ Max height with scroll (`max-height: 500px`)
+- ✅ Light/Dark theme support
+
+**Supported Languages:**
+- JavaScript, TypeScript, Python, Java, C++, Rust
+- HTML, CSS, SCSS, JSON, YAML
+- Bash, Shell, SQL, GraphQL
+- And many more...
+
+
+
+## Code Block Copy Feature
+
+Every code block includes a copy button that:
+1. Copies the code to clipboard
+2. Shows checkmark icon for 2 seconds
+3. Returns to copy icon
+
+```tsx showLineNumbers
+// User clicks copy button
+// → Code copied to clipboard
+// → Icon changes: Copy → CheckCircle2
+// → After 2s: CheckCircle2 → Copy
+```
+
+
+
+## Examples
+
+### Blog Post Viewer
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+export default function BlogPost({ post }: { post: { title: string; content: string } }) {
+  return (
+    <article className="container mx-auto py-12">
+      <h1 className="text-5xl font-bold mb-8">{post.title}</h1>
+      <Editor.Preview content={post.content} />
+    </article>
+  );
+}
+```
+
+
+
+### Documentation Page
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+export default function DocsPage({ markdown }: { markdown: string }) {
+  return (
+    <div className="max-w-4xl mx-auto py-8">
+      <Editor.Preview content={markdown} />
+    </div>
+  );
+}
+```
+
+
+
+### Markdown Preview with Tabs
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from 'react';
+
+export default function TabbedPreview() {
+  const [content, setContent] = useState('# Content');
+
+  return (
+    <Tabs defaultValue="write" className="h-screen">
+      <TabsList>
+        <TabsTrigger value="write">Write</TabsTrigger>
+        <TabsTrigger value="preview">Preview</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="write" className="h-full">
+        <Editor.Core
+          defaultContent={content}
+          onChangeContent={setContent}
+          className="w-full h-full p-4 font-mono"
+        />
+      </TabsContent>
+      
+      <TabsContent value="preview" className="h-full">
+        <Editor.Preview content={content} />
+      </TabsContent>
+    </Tabs>
+  );
+}
+```
+
+
+
+### Side-by-Side Editor and Preview
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useState } from 'react';
+
+export default function SplitView() {
+  const [content, setContent] = useState('# Split View');
+
+  return (
+    <div className="grid grid-cols-2 gap-4 h-screen p-4">
+      {/* Editor */}
+      <div className="border rounded-lg overflow-hidden">
+        <Editor.Core
+          defaultContent={content}
+          onChangeContent={setContent}
+          className="w-full h-full p-8 font-mono resize-none"
+          placeholder="Write markdown here..."
+        />
+      </div>
+
+      {/* Preview */}
+      <div className="border rounded-lg overflow-hidden">
+        <Editor.Preview content={content} />
+      </div>
+    </div>
+  );
+}
+```
+
+
+
+### Markdown with Custom Wrapper
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+export default function CardPreview({ title, markdown }: { title: string; markdown: string }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Editor.Preview content={markdown} />
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+
+
+### Loading State
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor } from '@/components/ui/markdown-editor';
+import { useState, useEffect } from 'react';
+
+export default function AsyncPreview({ articleId }: { articleId: string }) {
+  const [content, setContent] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/articles/${articleId}`)
+      .then(res => res.json())
+      .then(data => {
+        setContent(data.content);
+        setIsLoading(false);
+      });
+  }, [articleId]);
+
+  if (isLoading) {
+    return <div className="p-8 text-center">Loading...</div>;
+  }
+
+  return <Editor.Preview content={content} />;
+}
+```
+
+
+
+### Empty State
+
+When `content` is empty, the preview shows:
+
+```tsx showLineNumbers
+<Editor.Preview content="" />
+// Renders: "Preview will appear here..."
+```
+
+Custom empty state:
+
+```tsx showLineNumbers
+{content ? (
+  <Editor.Preview content={content} />
+) : (
+  <div className="p-8 text-center text-muted-foreground">
+    <p>No content to preview</p>
+  </div>
+)}
+```
+
+
+
+## Styling
+
+### Container
+
+The preview is wrapped in:
+```tsx showLineNumbers
+<div className="flex-1 overflow-y-auto bg-muted/30">
+  <div className="p-8 max-w-3xl mx-auto">
+    {/* Rendered content */}
+  </div>
+</div>
+```
+
+**Styles:**
+- `flex-1` → Takes available height
+- `overflow-y-auto` → Scrollable for long content
+- `bg-muted/30` → Subtle background
+- `p-8` → 32px padding
+- `max-w-3xl` → Max width 768px
+- `mx-auto` → Centered horizontally
+
+
+
+### Custom Width
+
+```tsx showLineNumbers
+// Wrap in container with custom max-width
+<div className="max-w-5xl mx-auto">
+  <Editor.Preview content={content} />
+</div>
+```
+
+
+
+### Custom Background
+
+```tsx showLineNumbers
+// The preview has bg-muted/30 by default
+// Override with wrapper
+<div className="bg-white dark:bg-slate-900">
+  <Editor.Preview content={content} />
+</div>
+```
+
+
+
+## GitHub Flavored Markdown (GFM)
+
+The preview supports GFM features via `remark-gfm`:
+
+### Tables
+
+```markdown
+| Feature | Supported |
+|---------|-----------|
+| Tables  | ✅        |
+| Lists   | ✅        |
+```
+
+
+
+### Strikethrough
+
+```markdown
+~~This text is crossed out~~
+```
+
+
+
+### Task Lists
+
+```markdown
+- [x] Completed task
+- [ ] Pending task
+```
+
+
+
+### Autolinks
+
+```markdown
+https://example.com becomes clickable automatically
+```
+
+
+
+## Performance Considerations
+
+### Large Documents
+
+For markdown content > 10,000 characters:
+- Preview renders immediately (no debouncing needed)
+- Browser handles scrolling efficiently
+- Code blocks limited to `max-height: 500px`
+
+
+
+## Accessibility
+
+The preview component:
+- ✅ Uses semantic HTML elements
+- ✅ Maintains proper heading hierarchy
+- ✅ Links are keyboard accessible
+- ✅ Code blocks have language labels
+- ✅ Copy button has visual feedback
+
+
+
+## Troubleshooting
+
+### Code highlighting not working
+
+**Problem**: Code blocks show plain text
+
+**Solution**: Ensure language is specified in markdown:
+
+~~~markdown
+❌ Bad:
+```
+code here
+```
+
+✅ Good:
+```javascript
+code here
+```
+~~~
+
+
+
+### Copy button not working
+
+**Problem**: Copy button doesn't copy code
+
+**Solution**: Ensure app runs in secure context (HTTPS or localhost):
+
+```tsx showLineNumbers
+// Check if clipboard API is available
+if (navigator.clipboard) {
+  navigator.clipboard.writeText(code);
+} else {
+  // Fallback for older browsers
+}
+```
+
+
+
+### Dark mode not applying
+
+**Problem**: Dark syntax theme not showing
+
+**Solution**: Ensure `dark` prop is passed correctly:
+
+```tsx showLineNumbers
+import { useTheme } from '@/rasenganjs/theme';
+
+const { isDark } = useTheme();
+
+<Editor.Preview 
+  content={content} 
+  dark={isDark}  // ✅ Pass theme state
+/>
+```
+
+
+
+### Markdown not rendering
+
+**Problem**: Shows raw markdown text
+
+**Solution**: Check `react-markdown` and `remark-gfm` are installed:
+
+```bash
+npm install react-markdown remark-gfm react-syntax-highlighter
+```
+
+
+
+## Integration with MarkdownEditor
+
+The preview is automatically included in `MarkdownEditor`:
+
+```tsx showLineNumbers
+<MarkdownEditor />
+// Includes Editor.Preview in split/preview modes
+```
+
+To use standalone:
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+<Editor.Preview content={yourMarkdown} />
+```
+
+
+
+<Pagination 
+    previous={{
+       to: "/docs/components/editor-core",
+        label: "Editor Core"
+    }}
+    next={{
+        to: "/docs/components/editor-toolbar",
+        label: "Editor Toolbar"
+    }}
+/>
