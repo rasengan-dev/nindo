@@ -1,0 +1,980 @@
+---
+metadata:
+    title: Editor Toolbar | Components | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+import { Editor } from "@/registry/nindo/editors/markdown";
+
+import MinimalToolbar from "@/components/features/docs/organisms/editors/toolbar/minimal-toolbar";
+import ToolbarWithModes from "@/components/features/docs/organisms/editors/toolbar/toolbar-with-view-mode";
+import ToolbarWithOrientation from "@/components/features/docs/organisms/editors/toolbar/toolbar-with-orientation";
+
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+import Preview from "@/components/features/docs/molecules/preview";
+
+
+
+# Editor.Toolbar Component
+
+The `Editor.Toolbar` component provides a rich set of formatting controls, view mode toggles, and editing actions. It's context-aware, displaying active states based on the current block type and cursor position.
+
+## Import
+
+```tsx showLineNumbers
+import { Editor } from '@/components/ui/markdown-editor';
+
+// Use as
+<Editor.Toolbar />
+```
+
+## Overview
+
+The toolbar is divided into four main sections:
+1. **Formatting Actions** (left) - Text and block formatting buttons
+2. **Layout Controls** (right) - Orientation toggle for split view
+3. **View Mode Toggles** (right) - Edit, Split, Preview modes
+4. **History Controls** (right) - Undo and Redo buttons
+
+
+
+## Props
+
+### actions
+
+- **Type**: `ToolbarAction[]`
+- **Required**: Yes
+- **Description**: Array of formatting actions to display in the toolbar
+
+```tsx showLineNumbers
+interface ToolbarAction {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  shortcut?: string;
+  handler: (content: string, selection: SelectionState) => {
+    content: string;
+    selection: SelectionState;
+  };
+}
+```
+
+**Example:**
+
+```tsx showLineNumbers
+import { createToolbarActions } from '@/components/ui/markdown-editor';
+
+const actions = createToolbarActions();
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+/>
+```
+
+
+
+### onAction
+
+- **Type**: `(action: ToolbarAction) => void`
+- **Required**: Yes
+- **Description**: Callback fired when a formatting button is clicked
+
+```tsx showLineNumbers
+const handleAction = (action: ToolbarAction) => {
+  const result = action.handler(content, selection);
+  updateContent(result.content, result.selection);
+  
+  // Restore focus to editor
+  textareaRef.current?.focus();
+};
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  // ... other props
+/>
+```
+
+<Note title="Note: use `useEditor` hook">
+You remarked the use of `selection` and `updateContent` in the example. 
+These are properties returned by the `useEditor` hook.
+</Note>
+
+```tsx showLineNumbers
+const { content, selection, updateContent } = useEditor();
+```
+
+
+
+### currentBlock
+
+- **Type**: `Block | null`
+- **Required**: Yes
+- **Description**: The block at the current cursor position, used for context-aware button states
+
+```tsx showLineNumbers
+interface Block {
+  id: string;
+  type: BlockType;  // 'paragraph' | 'heading' | 'code' | 'quote' | 'list'
+  level?: number;   // For headings (1-6)
+  startOffset: number;
+  endOffset: number;
+  content: string;
+}
+```
+
+**Usage:**
+
+```tsx showLineNumbers
+const currentBlock = getCurrentBlock(blocks, selection.start);
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}  // Highlights active block type
+  // ... other props
+/>
+```
+
+**Effect:**
+- When cursor is in a heading, the corresponding H1/H2/H3 button is highlighted
+- When cursor is in a code block, the code button appears active
+- Provides visual feedback about current context
+
+
+
+### undo
+
+- **Type**: `() => void`
+- **Required**: Yes
+- **Description**: Callback to undo the last change
+
+```tsx showLineNumbers
+// Example implementation 
+const undo = () => {
+  if (historyIndex > 0) {
+    setHistoryIndex(prev => prev - 1);
+    setContent(history[historyIndex - 1]);
+  }
+};
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  // ... other props
+/>
+```
+
+<Note title="Note: use `useEditor` hook">
+You remarked the use of `undo` in the example. 
+This is a property returned by the `useEditor` hook.
+</Note>
+
+```tsx showLineNumbers
+const { undo } = useEditor();
+```
+
+
+
+### redo
+
+- **Type**: `() => void`
+- **Required**: Yes
+- **Description**: Callback to redo the last undone change
+
+```tsx showLineNumbers
+// Example implementation 
+const redo = () => {
+  if (historyIndex < history.length - 1) {
+    setHistoryIndex(prev => prev + 1);
+    setContent(history[historyIndex + 1]);
+  }
+};
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  // ... other props
+/>
+```
+
+<Note title="Note: use `useEditor` hook">
+You remarked the use of `redo` in the example. 
+This is a property returned by the `useEditor` hook.
+</Note>
+
+```tsx showLineNumbers
+const { undo, redo } = useEditor();
+```
+
+
+### canUndo
+
+- **Type**: `boolean`
+- **Required**: Yes
+- **Description**: Whether undo action is available (disables button when false)
+
+```tsx showLineNumbers
+// Example implementation 
+const canUndo = historyIndex > 0;
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}  // Button disabled when false
+  // ... other props
+/>
+```
+<Note title="Note: use `useEditor` hook">
+You remarked the use of `canUndo` in the example. 
+This is a property returned by the `useEditor` hook.
+</Note>
+
+```tsx showLineNumbers
+const { canUndo } = useEditor();
+```
+
+
+### canRedo
+
+- **Type**: `boolean`
+- **Required**: Yes
+- **Description**: Whether redo action is available (disables button when false)
+
+```tsx showLineNumbers
+// Example implementation 
+const canRedo = historyIndex < history.length - 1;
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}  // Button disabled when false
+/>
+```
+
+<Note title="Note: use `useEditor` hook">
+You remarked the use of `canRedo` in the example. 
+This is a property returned by the `useEditor` hook.
+</Note>
+
+```tsx showLineNumbers
+const { canRedo } = useEditor();
+```
+
+
+### mode
+
+- **Type**: `'edit' | 'preview' | 'split'`
+- **Optional**: Yes
+- **Description**: Current view mode of the editor
+
+```tsx showLineNumbers
+const [mode, setMode] = useState<ViewMode>('split');
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  mode={mode}
+  setMode={setMode}
+/>
+```
+
+**Effect:**
+- Highlights the active view mode button
+- Disables formatting buttons in preview mode (no editing allowed)
+
+
+
+### setMode
+
+- **Type**: `(mode: ViewMode) => void`
+- **Optional**: Yes
+- **Description**: Callback to change the view mode
+
+```tsx showLineNumbers
+const handleModeChange = (newMode: ViewMode) => {
+  setMode(newMode);
+  
+  // Optional: Save preference
+  localStorage.setItem('editorMode', newMode);
+};
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  mode={mode}
+  setMode={handleModeChange}
+/>
+```
+
+
+
+### orientation
+
+- **Type**: `'horizontal' | 'vertical'`
+- **Optional**: Yes
+- **Default**: `'horizontal'`
+- **Description**: Layout orientation for split view
+
+```tsx showLineNumbers
+const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  orientation={orientation}
+  setOrientation={setOrientation}
+/>
+```
+
+**Effect:**
+- `'horizontal'` → Editor and preview side-by-side
+- `'vertical'` → Editor and preview stacked vertically
+- Shows `<GalleryHorizontal />` icon when horizontal
+- Shows `<GalleryVertical />` icon when vertical
+
+
+
+### setOrientation
+
+- **Type**: `(orientation: 'horizontal' | 'vertical') => void`
+- **Optional**: Yes
+- **Description**: Callback to change the split view orientation
+
+```tsx showLineNumbers
+const handleOrientationChange = (newOrientation: 'horizontal' | 'vertical') => {
+  setOrientation(newOrientation);
+};
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  orientation={orientation}
+  setOrientation={handleOrientationChange}
+/>
+```
+
+
+
+## Basic Usage
+
+### Minimal Setup
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor, createToolbarActions, useEditor } from '@/components/ui/markdown-editor';
+import { useRef, useState } from 'react';
+
+export default function MinimalToolbar() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const actions = createToolbarActions();
+  
+  const {
+    content,
+    selection,
+    currentBlock,
+	setSelection,
+    updateContent,
+    undo,
+    redo,
+    canUndo,
+    canRedo
+  } = useEditor('# Hello');
+ 
+  const handleAction = (action: any) => {
+    const result = action.handler(content, selection);
+    updateContent(result.content, result.selection);
+  }
+ 
+  return (
+    <div className="h-[400px] flex flex-col">
+      <Editor.Toolbar
+        actions={actions}
+        onAction={handleAction}
+        currentBlock={currentBlock}
+        undo={undo}
+        redo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+      />
+      
+      <Editor.Core
+        content={content}
+        onChange={updateContent}
+        onSelectionChange={setSelection}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+<Preview>
+    <MinimalToolbar />
+</Preview>
+
+<Note title="Note: View modes and orientation not supported">
+View modes and orientation are not supported in this example, that's why it's disabled.
+</Note>
+
+
+### With View Modes
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor, createToolbarActions, useEditor, ViewMode } from '@/components/ui/markdown-editor';
+import { useRef, useState } from 'react';
+
+export default function ToolbarWithModes() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const actions = createToolbarActions();
+  const [mode, setMode] = useState<ViewMode>('split');
+  
+  const {
+    content,
+    selection,
+    currentBlock,
+    updateContent,
+    setSelection,
+    undo,
+    redo,
+    canUndo,
+    canRedo
+  } = useEditor('# Content');
+
+  const handleAction = (action: any) => {
+    const result = action.handler(content, selection);
+    updateContent(result.content, result.selection);
+  };
+
+  return (
+    <div className="h-screen flex flex-col">
+      <Editor.Toolbar
+        actions={actions}
+        onAction={handleAction}
+        currentBlock={currentBlock}
+        undo={undo}
+        redo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        mode={mode}
+        setMode={setMode}
+      />
+      
+      <div className="flex-1 flex">
+        {(mode === 'edit' || mode === 'split') && (
+          <Editor.Core
+            content={content}
+            onChange={updateContent}
+            onSelectionChange={setSelection}
+            textareaRef={textareaRef}
+          />
+        )}
+        {(mode === 'preview' || mode === 'split') && (
+          <Editor.Preview content={content} />
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+<Preview>
+    <ToolbarWithModes />
+</Preview>
+
+
+
+### With Orientation Toggle
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor, createToolbarActions, useEditor, ViewMode, Orientation } from '@/components/ui/markdown-editor';
+import { useRef, useState } from 'react';
+
+export default function ToolbarWithOrientation() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const actions = createToolbarActions();
+  const [mode, setMode] = useState<ViewMode>('split');
+  const [orientation, setOrientation] = useState<Orientation>('horizontal');
+  
+  const {
+    content,
+    selection,
+    currentBlock,
+    updateContent,
+    setSelection,
+    undo,
+    redo,
+    canUndo,
+    canRedo
+  } = useEditor('# Content');
+
+  const handleAction = (action: any) => {
+    const result = action.handler(content, selection);
+    updateContent(result.content, result.selection);
+  };
+
+  return (
+    <div className="h-[500px] flex flex-col">
+      <Editor.Toolbar
+        actions={actions}
+        onAction={handleAction}
+        currentBlock={currentBlock}
+        undo={undo}
+        redo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        mode={mode}
+        setMode={setMode}
+        orientation={orientation}
+        setOrientation={setOrientation}
+      />
+      
+      <div className={`flex-1 flex ${orientation === 'horizontal' ? 'flex-row' : 'flex-col'}`}>
+        {(mode === 'edit' || mode === 'split') && (
+          <Editor.Core
+            content={content}
+            onChange={updateContent}
+            onSelectionChange={setSelection}
+            textareaRef={textareaRef}
+          />
+        )}
+        {(mode === 'preview' || mode === 'split') && (
+          <Editor.Preview content={content} />
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+<Preview>
+    <ToolbarWithOrientation />
+</Preview>
+
+
+## Toolbar Sections
+
+### 1. Formatting Actions (Left)
+
+**First Group (Inline Formatting):**
+- **Bold** - Wraps selection in `**text**`
+- **Italic** - Wraps selection in `_text_`
+- **Inline Code** - Wraps selection in `` `code` ``
+- **Link** - Creates `[text](url)` format
+
+**Second Group (Block Formatting):**
+- **H1** - Converts line to `# Heading`
+- **H2** - Converts line to `## Heading`
+- **H3** - Converts line to `### Heading`
+- **Quote** - Converts line to `> Quote`
+- **Code Block** - Wraps selection in ` ```code``` `
+
+**Behavior:**
+- Buttons are disabled when `mode === 'preview'`
+- Active button is highlighted based on `currentBlock` type
+- Each button shows tooltip with label and keyboard shortcut
+
+
+
+### 2. Layout Controls (Right)
+
+**Orientation Toggle:**
+- Switches between horizontal and vertical split layouts
+- Only affects layout when `mode === 'split'`
+
+
+
+### 3. View Mode Toggles (Right)
+
+**Three Modes:**
+1. **Edit** 
+   - Shows only the editor
+   - Full width for writing
+   - Preview hidden
+
+2. **Split** 
+   - Shows editor and preview side-by-side (or stacked)
+   - Default mode
+   - Best for writing with live feedback
+
+3. **Preview**
+   - Shows only the preview
+   - Full width for reading
+   - Formatting buttons disabled
+
+
+
+### 4. History Controls (Right)
+
+**Undo Button:**
+- Tooltip: "Undo (⌘Z)"
+- Disabled when `canUndo`  is `false`
+- Reverts last change
+
+**Redo Button:**
+- Tooltip: "Redo (⌘⇧Z)"
+- Disabled when `canRedo` is `false`
+- Reapplies last undone change
+
+
+
+## Toolbar Actions
+
+### Default Actions
+
+Created by `createToolbarActions()`:
+
+```tsx showLineNumbers
+const actions = [
+  {
+    id: 'bold',
+    label: 'Bold',
+    icon: <Bold />,
+    shortcut: '⌘B',
+    handler: (content, selection) => wrapSelection(content, selection, '**')
+  },
+  {
+    id: 'italic',
+    label: 'Italic',
+    icon: <Italic />,
+    shortcut: '⌘I',
+    handler: (content, selection) => wrapSelection(content, selection, '_')
+  },
+  {
+    id: 'code',
+    label: 'Inline Code',
+    icon: <CodeXml />,
+    handler: (content, selection) => wrapSelection(content, selection, '`')
+  },
+  {
+    id: 'link',
+    label: 'Link',
+    icon: <Link2 />,
+    shortcut: '⌘K',
+    handler: (content, selection) => {
+      const selectedText = content.slice(selection.start, selection.end) || 'link text';
+      const linkMarkdown = `[${selectedText}](url)`;
+      // ... implementation
+    }
+  },
+  // Block formatting actions...
+];
+```
+
+
+
+### Custom Actions
+
+Add your own formatting actions:
+
+```tsx showLineNumbers
+import { createToolbarActions, type ToolbarAction } from '@/components/ui/markdown-editor';
+import { Strikethrough } from 'lucide-react';
+
+const defaultActions = createToolbarActions();
+
+const strikethroughAction: ToolbarAction = {
+  id: 'strikethrough',
+  label: 'Strikethrough',
+  icon: <Strikethrough />,
+  handler: (content, selection) => {
+    const before = content.slice(0, selection.start);
+    const selected = content.slice(selection.start, selection.end);
+    const after = content.slice(selection.end);
+    
+    return {
+      content: before + '~~' + selected + '~~' + after,
+      selection: {
+        start: selection.start + 2,
+        end: selection.end + 2
+      }
+    };
+  }
+};
+
+const customActions = [...defaultActions, strikethroughAction];
+
+<Editor.Toolbar
+  actions={customActions}
+  onAction={handleAction}
+  // ... other props
+/>
+```
+
+
+
+## Context-Aware Highlighting
+
+The toolbar automatically highlights buttons based on cursor position:
+
+```tsx showLineNumbers
+// When cursor is in:
+
+// Heading 1 (# text)
+currentBlock = { type: 'heading', level: 1, ... }
+// → H1 button is highlighted
+
+// Heading 2 (## text)
+currentBlock = { type: 'heading', level: 2, ... }
+// → H2 button is highlighted
+
+// Code block (```code```)
+currentBlock = { type: 'code', ... }
+// → Code Block button is highlighted
+
+// Quote (> text)
+currentBlock = { type: 'quote', ... }
+// → Quote button is highlighted
+
+// Regular paragraph
+currentBlock = { type: 'paragraph', ... }
+// → No block format buttons highlighted
+```
+
+
+
+## Disabled States
+
+### Preview Mode
+
+When `mode === 'preview'`, all formatting actions are disabled:
+
+```tsx showLineNumbers
+<Button
+  onClick={() => onAction(action)}
+  disabled={mode === 'preview'}  // ← Prevents formatting in preview
+  // ... other props
+>
+  {action.icon}
+</Button>
+```
+
+**Why?**
+- No editor visible in preview mode
+- Prevents confusion when users can't see changes
+- Formatting only works in edit/split modes
+
+
+
+### History Buttons
+
+Undo/Redo buttons are disabled based on history state:
+
+```tsx showLineNumbers
+<Button
+  onClick={undo}
+  disabled={!canUndo}  // ← Disabled at start of history
+  // ... props
+/>
+
+<Button
+  onClick={redo}
+  disabled={!canRedo}  // ← Disabled at end of history
+  // ... props
+/>
+```
+
+
+## Keyboard Shortcuts
+
+The toolbar displays keyboard shortcut hints in tooltips:
+
+| Action | Shortcut | Tooltip |
+|--------|----------|---------|
+| Bold | ⌘B | "Bold (⌘B)" |
+| Italic | ⌘I | "Italic (⌘I)" |
+| Link | ⌘K | "Link (⌘K)" |
+| Undo | ⌘Z | "Undo (⌘Z)" |
+| Redo | ⌘⇧Z | "Redo (⌘⇧Z)" |
+
+<Note title="Note:">
+Shortcuts are visual hints only. Actual keyboard handling is done by `useMarkdownShortcuts` hook.
+</Note>
+
+
+
+## Examples
+
+### Custom Toolbar with Extra Actions
+
+```tsx showLineNumbers
+import { createToolbarActions, type ToolbarAction } from '@/components/ui/markdown-editor';
+import { Table, Image } from 'lucide-react';
+
+const tableAction: ToolbarAction = {
+  id: 'table',
+  label: 'Insert Table',
+  icon: <Table />,
+  handler: (content, selection) => {
+    const table = '\n| Header 1 | Header 2 |\n|----------|----------|\n| Cell 1   | Cell 2   |\n';
+    return {
+      content: content.slice(0, selection.start) + table + content.slice(selection.end),
+      selection: { start: selection.start + 1, end: selection.start + 1 }
+    };
+  }
+};
+
+const imageAction: ToolbarAction = {
+  id: 'image',
+  label: 'Insert Image',
+  icon: <Image />,
+  handler: (content, selection) => {
+    const markdown = '![alt text](image-url)';
+    return {
+      content: content.slice(0, selection.start) + markdown + content.slice(selection.end),
+      selection: { start: selection.start + 2, end: selection.start + 10 }
+    };
+  }
+};
+
+const actions = [...createToolbarActions(), tableAction, imageAction];
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+/>
+```
+
+
+
+### Toolbar with Saved Preferences
+
+```tsx showLineNumbers
+'use client';
+
+import { Editor, createToolbarActions, useEditor } from '@/components/ui/markdown-editor';
+import { useState, useEffect } from 'react';
+
+export default function PersistentToolbar() {
+  const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
+  const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
+
+  // Load preferences
+  useEffect(() => {
+    const savedMode = localStorage.getItem('editorMode');
+    const savedOrientation = localStorage.getItem('editorOrientation');
+    
+    if (savedMode) setMode(savedMode as any);
+    if (savedOrientation) setOrientation(savedOrientation as any);
+  }, []);
+
+  // Save preferences
+  const handleModeChange = (newMode: any) => {
+    setMode(newMode);
+    localStorage.setItem('editorMode', newMode);
+  };
+
+  const handleOrientationChange = (newOrientation: any) => {
+    setOrientation(newOrientation);
+    localStorage.setItem('editorOrientation', newOrientation);
+  };
+
+  // ... rest of implementation
+
+  return (
+    <Editor.Toolbar
+      actions={createToolbarActions()}
+      onAction={handleAction}
+      currentBlock={currentBlock}
+      undo={undo}
+      redo={redo}
+      canUndo={canUndo}
+      canRedo={canRedo}
+      mode={mode}
+      setMode={handleModeChange}
+      orientation={orientation}
+      setOrientation={handleOrientationChange}
+    />
+  );
+}
+```
+
+
+
+## Accessibility
+
+The toolbar includes:
+- ✅ Tooltips on all buttons (via `title` attribute)
+- ✅ Keyboard shortcuts displayed
+- ✅ Visual disabled states
+- ✅ Icon-only buttons with descriptive titles
+- ✅ Logical tab order
+
+**Future improvements:**
+- Add ARIA labels for better screen reader support
+- Implement keyboard navigation between toolbar buttons
+
+
+
+## Integration with MarkdownEditor
+
+The toolbar is automatically included in `MarkdownEditor`:
+
+```tsx showLineNumbers
+<MarkdownEditor />
+// Includes Editor.Toolbar with all features
+```
+
+To use standalone, you need to provide all required props from `useEditor` hook.
+
+
+<Pagination 
+    previous={{
+       to: "/docs/components/editor-preview",
+        label: "Editor Preview"
+    }}
+    next={{
+        to: "/docs/hooks/use-editor",
+        label: "useEditor"
+    }}
+/>

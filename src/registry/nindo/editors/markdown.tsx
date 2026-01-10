@@ -15,6 +15,7 @@ import { useTheme } from '@rasenganjs/theme';
 
 type BlockType = 'paragraph' | 'heading' | 'code' | 'quote' | 'list' | 'image';
 type ViewMode = 'edit' | 'preview' | 'split';
+type Orientation = 'horizontal' | 'vertical';
 
 interface Block {
   id: string;
@@ -88,9 +89,10 @@ const getCurrentBlock = (blocks: Block[], cursorPos: number): Block | null => {
 };
 
 const mappingBlockToAction = (block: BlockType, level?: number): ToolbarAction["id"] => {
+  console.log(block, level);
   switch (block) {
     case "heading": {
-      return `h${level && 0}`;
+      return `h${level ? level : 0}`;
     }
     case 'code': return 'code-block'
     case 'list': return "list";
@@ -404,8 +406,8 @@ const EditorToolbar: React.FC<{
   canRedo: boolean;
   mode?: ViewMode;
   setMode?: (mode: ViewMode) => void;
-	orientation?: "vertical" | "horizontal",
-	setOrientation?: (orientation: "vertical" | "horizontal") => void
+	orientation?: Orientation,
+	setOrientation?: (orientation: Orientation) => void
 }> = ({ actions, onAction, currentBlock, undo, redo, canUndo, canRedo, mode, setMode, orientation = "horizontal", setOrientation }) => {
   return (
     <div className="flex items-center justify-between gap-2 h-[50px] px-2 py-3 bg-background border-b border-border">
@@ -432,8 +434,8 @@ const EditorToolbar: React.FC<{
               key={action.id}
               onClick={() => onAction(action)}
               size={"icon"}
-              variant="outline"
-              className="text-foreground/70"
+              variant={mappingBlockToAction(currentBlock?.type || 'paragraph', currentBlock?.level) === action.id ? "default" : "outline"}
+              className={mappingBlockToAction(currentBlock?.type || 'paragraph', currentBlock?.level) === action.id ? "text-primary-foreground" : "text-foreground/70"}
               title={action.label}
               disabled={mode === 'preview'}
             >
@@ -450,6 +452,7 @@ const EditorToolbar: React.FC<{
             onClick={() => setOrientation && setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
             variant={"outline"} 
             title="Edit"
+            disabled={!setOrientation}
           >
             {
 							orientation === "horizontal" ? <GalleryHorizontal /> : <GalleryVertical />
@@ -463,6 +466,7 @@ const EditorToolbar: React.FC<{
             onClick={() => setMode && setMode("edit")}
             variant={mode === "edit" ? "default" : "outline"} 
             title="Edit"
+            disabled={!setMode}
           >
             <Edit2 />
           </Button>
@@ -471,6 +475,7 @@ const EditorToolbar: React.FC<{
             onClick={() => setMode && setMode("split")}
             variant={mode === "split" ? "default" : "outline"} 
             title="Split"
+            disabled={!setMode}
           >
             <SquareSplitHorizontal />
           </Button>
@@ -479,6 +484,7 @@ const EditorToolbar: React.FC<{
             onClick={() => setMode && setMode("preview")}
             variant={mode === "preview" ? "default" : "outline"} 
             title="Preview"
+            disabled={!setMode}
           >
             <Eye />
           </Button>
@@ -642,7 +648,7 @@ const MarkdownEditor = ({
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
 	const [mode, setMode] = useState<ViewMode>("split");
-	const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
+	const [orientation, setOrientation] = useState<Orientation>("horizontal");
 
 	const toolbarActions = createToolbarActions();
 
@@ -739,5 +745,6 @@ export {
   useMarkdownShortcuts,
   createToolbarActions,
   type ToolbarAction,
-  type ViewMode
+  type ViewMode,
+  type Orientation
 };

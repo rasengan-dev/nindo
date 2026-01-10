@@ -16,13 +16,13 @@ The `MarkdownEditor` component is the main entry point for Nindo. It provides a 
 
 ## Import
 
-```tsx showLineNumbers
+```tsx showLineNumbers showLineNumbers
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
 ```
 
 ## Basic Usage
 
-```tsx showLineNumbers
+```tsx showLineNumbers showLineNumbers
 export default function Page() {
   return <MarkdownEditor />;
 }
@@ -36,7 +36,7 @@ export default function Page() {
 - **Default**: `""`
 - **Description**: Initial markdown content to display in the editor
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor 
   defaultContent="# Welcome\n\nStart writing..." 
 />
@@ -50,7 +50,7 @@ export default function Page() {
 - **Default**: `undefined`
 - **Description**: Callback fired whenever the editor content changes
 
-```tsx
+```tsx showLineNumbers
 function MyEditor() {
   const [markdown, setMarkdown] = useState('');
 
@@ -76,7 +76,7 @@ function MyEditor() {
 - **Default**: `undefined`
 - **Description**: Additional CSS classes to apply to the root Card container
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor 
   className="border-2 border-blue-500 rounded-xl"
 />
@@ -91,7 +91,7 @@ function MyEditor() {
 
 ### Controlled Editor with Save
 
-```tsx
+```tsx showLineNumbers
 'use client';
 
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
@@ -141,7 +141,7 @@ export default function BlogEditor() {
 
 ### Custom Height
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor 
   className="h-[800px]"
   defaultContent="# Tall Editor"
@@ -150,7 +150,7 @@ export default function BlogEditor() {
 
 ### Loading Existing Content
 
-```tsx
+```tsx showLineNumbers
 'use client';
 
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
@@ -184,7 +184,7 @@ export default function EditPost({ postId }: { postId: string }) {
 
 ### Multiple Editors on Same Page
 
-```tsx
+```tsx showLineNumbers
 export default function ComparisonView() {
   const [draft, setDraft] = useState('# Draft');
   const [published, setPublished] = useState('# Published Version');
@@ -215,7 +215,7 @@ export default function ComparisonView() {
 
 ### Auto-Save Implementation
 
-```tsx
+```tsx showLineNumbers
 'use client';
 
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
@@ -261,7 +261,7 @@ export default function AutoSaveEditor() {
 
 ### With Character Limit
 
-```tsx
+```tsx showLineNumbers
 'use client';
 
 import { MarkdownEditor } from '@/components/ui/markdown-editor';
@@ -301,7 +301,7 @@ export default function LimitedEditor() {
 
 The editor automatically supports dark mode when using Tailwind's dark mode:
 
-```tsx
+```tsx showLineNumbers
 <div className="dark">
   <MarkdownEditor />
 </div>
@@ -311,7 +311,7 @@ The editor automatically supports dark mode when using Tailwind's dark mode:
 
 The `MarkdownEditor` component is composed of several sub-components:
 
-```tsx
+```tsx showLineNumbers
 <Card>                          {/* Root container */}
   <Editor.Toolbar />            {/* Formatting toolbar */}
   
@@ -404,31 +404,31 @@ Automatically displays:
 
 ### Custom Height
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor className="h-[500px]" />
 ```
 
 ### Custom Width
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor className="max-w-4xl mx-auto" />
 ```
 
 ### Custom Border
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor className="border-2 border-primary rounded-2xl" />
 ```
 
 ### Full Screen
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor className="h-screen w-screen" />
 ```
 
 ### Custom Background
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor className="bg-gradient-to-br from-purple-50 to-pink-50" />
 ```
 
@@ -438,7 +438,7 @@ Automatically displays:
 
 The component is fully typed:
 
-```tsx
+```tsx showLineNumbers
 interface MarkdownEditorProps {
   defaultContent?: string;
   onChangeContent?: (content: string) => void;
@@ -448,7 +448,7 @@ interface MarkdownEditorProps {
 
 You get full IntelliSense and type checking:
 
-```tsx
+```tsx showLineNumbers
 <MarkdownEditor
   defaultContent="# Hello"    // ✅ string
   onChangeContent={(content) => {
@@ -485,7 +485,7 @@ For documents > 1000 lines:
 
 Example debounced handler:
 
-```tsx
+```tsx showLineNumbers
 import { useDebouncedCallback } from 'use-debounce';
 
 const debouncedSave = useDebouncedCallback(
@@ -506,7 +506,7 @@ const debouncedSave = useDebouncedCallback(
 
 To create a read-only viewer, use [Editor.Preview](/docs/components/editor-preview) component instead.
 
-```tsx
+```tsx showLineNumbers
 // You'll need to modify the component to hide the toolbar
 // or create a separate Preview component
 import { Editor } from '@/components/ui/markdown-editor';
