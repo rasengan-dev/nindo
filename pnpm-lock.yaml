@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  rasengan:
-    hash: b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c
-    path: patches/rasengan.patch
   react-syntax-highlighter:
     hash: b4d92e652af6cd350e16b0159cdccb92d835be80b9a28dc514f86d15e14887d6
     path: patches/react-syntax-highlighter.patch
@@ -23,17 +20,17 @@ importers:
         specifier: ^1.0.0
         version: 1.1.3(react@19.2.3)
       '@rasenganjs/mdx':
-        specifier: 1.2.0-beta.3
-        version: 1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)
+        specifier: 1.2.0-beta.6
+        version: 1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)
       '@rasenganjs/serve':
         specifier: ^1.2.0
-        version: 1.2.0(rasengan@1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))
+        version: 1.2.0(rasengan@1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))
       '@rasenganjs/theme':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
       '@rasenganjs/vercel':
         specifier: ^1.1.0
-        version: 1.1.0(rasengan@1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))
+        version: 1.1.0(rasengan@1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.1.18(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
@@ -47,8 +44,8 @@ importers:
         specifier: ^0.477.0
         version: 0.477.0(react@19.2.3)
       rasengan:
-        specifier: 1.2.1-beta.0
-        version: 1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
+        specifier: 1.2.1-beta.4
+        version: 1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
       react:
         specifier: ^19.2.0
         version: 19.2.3
@@ -571,8 +568,8 @@ packages:
     peerDependencies:
       react: ^19.0.0
 
-  '@rasenganjs/mdx@1.2.0-beta.3':
-    resolution: {integrity: sha512-2xbYJ9g5dYcQfxEqs0zy414jWgg9QuyaHWwQ9wnY0DO/fK1AwBv4NfH2Cf+47IEyQgNx66JB52GWs3RQ4c6LJA==}
+  '@rasenganjs/mdx@1.2.0-beta.6':
+    resolution: {integrity: sha512-qg9alCFGajG5LIE3jwDU23TMEvMt1FUvx92mvswZRXQ4LibHHdBPdfiA/5VaCIFgONAKSgzj/JB2hKfz/Qa2Mw==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
@@ -2526,12 +2523,12 @@ packages:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
 
-  rasengan@1.2.1-beta.0:
-    resolution: {integrity: sha512-LTsNp0Mm2e0cAzuzMR5Drp8TJtp+2tIJEo262tYYW48gesQfJH6LQzeTmTVhGfC6W1UwpaEWjNEgowMrJDaPyg==}
+  rasengan@1.2.1-beta.4:
+    resolution: {integrity: sha512-HIhbmGFcXhscq1WjI7ATeYfKSa9q8LVSSMlyi6XYVb1OoqZB45Wi+gLuLKD713GjVVZSoLuiM4b9K4XXl7hNlQ==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
-      '@rasenganjs/mdx': ^1.2.0-beta.1
+      '@rasenganjs/mdx': '*'
       '@types/node': '>=20.0.0'
       less: '*'
       react: ^19.2.0
@@ -3697,7 +3694,7 @@ snapshots:
     dependencies:
       react: 19.2.3
 
-  '@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)':
+  '@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)':
     dependencies:
       '@mdx-js/rollup': 3.1.1(rollup@4.55.1)
       gray-matter: 4.0.3
@@ -3721,14 +3718,14 @@ snapshots:
       - rollup
       - supports-color
 
-  '@rasenganjs/serve@1.2.0(rasengan@1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))':
+  '@rasenganjs/serve@1.2.0(rasengan@1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))':
     dependencies:
       chalk: 5.6.2
       compression: 1.8.1
       express: 4.22.1
       get-port: 7.1.0
       morgan: 1.10.1
-      rasengan: 1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
+      rasengan: 1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
       source-map-support: 0.5.21
     transitivePeerDependencies:
       - supports-color
@@ -3737,10 +3734,10 @@ snapshots:
     dependencies:
       react: 19.2.3
 
-  '@rasenganjs/vercel@1.1.0(rasengan@1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))':
+  '@rasenganjs/vercel@1.1.0(rasengan@1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)))':
     dependencies:
       execa: 8.0.1
-      rasengan: 1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
+      rasengan: 1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
 
   '@rolldown/pluginutils@1.0.0-beta.53': {}
 
@@ -5934,7 +5931,7 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  rasengan@1.2.1-beta.0(patch_hash=b76a040a09c04b6e05b445b003217015c2255b5466466bc74c122050b91ae04c)(@rasenganjs/mdx@1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)):
+  rasengan@1.2.1-beta.4(@rasenganjs/mdx@1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1))(@types/node@24.10.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)):
     dependencies:
       '@vitejs/plugin-react': 5.1.2(vite@7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2))
       chalk: 5.6.2
@@ -5950,7 +5947,7 @@ snapshots:
       react-router: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       vite: 7.3.1(@types/node@24.10.7)(jiti@2.6.1)(lightningcss@1.30.2)
     optionalDependencies:
-      '@rasenganjs/mdx': 1.2.0-beta.3(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)
+      '@rasenganjs/mdx': 1.2.0-beta.6(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)
       '@types/node': 24.10.7
     transitivePeerDependencies:
       - supports-color

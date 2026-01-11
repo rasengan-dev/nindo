@@ -29,7 +29,7 @@ export default defineMDXConfig({
     });
 
     return (
-      <div className="sticky top-4 max-h-[calc(100vh-10rem)] overflow-y-auto flex flex-col gap-8">
+      <div className="sticky top-4 max-h-[calc(100vh-10rem)] overflow-y-auto hidden xl:flex flex-col gap-8">
         <div className="mt-8">
           <h2 className="text-sm font-semibold mt-0 mb-2 text-foreground/50">
             On This Page

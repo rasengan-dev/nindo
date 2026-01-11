@@ -1,3 +1,2 @@
 patchedDependencies:
-  rasengan: patches/rasengan.patch
   react-syntax-highlighter: patches/react-syntax-highlighter.patch

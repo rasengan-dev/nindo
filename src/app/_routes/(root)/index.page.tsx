@@ -1,7 +1,8 @@
 import { Button } from '@/components/common/ui/button';
 import { MarkdownEditor } from '@/registry/nindo/editors/markdown';
-import { Copy, ArrowRight } from 'lucide-react';
+import { Copy, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Link, PageComponent } from 'rasengan';
+import { useState } from 'react';
 
 const markdown = `
 # Welcome to the Nindo Editor
@@ -37,27 +38,34 @@ Happy writing! ✨
 `
 
 const Page: PageComponent = () => {
+  const [isCopied, setIsCopied] = useState(false);
+
   return (
     <section className='w-full h-full flex flex-col items-center justify-center'>
       <div className='flex flex-col items-center'>
         <h1 className='max-w-[900px] text-5xl md:text-[60px] md:leading-[65px] text-pretty font-bold text-center text-foreground/60'>The flexible <span className='text-foreground'>Markdown Editor</span> for modern platforms</h1>
         <p className='text-lg text-foreground/70 max-w-[700px] text-center mt-6 text-pretty'>Nindo is a highly extensible Markdown editor built for React, offering block awareness, live preview, and total control over your content.</p>
 
-        {/* <div className='max-w-[900px] w-auto h-[40px] border border-border bg-muted rounded-full px-4 flex gap-4 items-center mt-6 text-sm'>
+        <div className='max-w-[900px] w-auto h-[40px] border border-border bg-muted rounded-full px-4 flex gap-4 items-center mt-6 text-sm'>
           <span className='cursor-default text-foreground/70 hover:text-red-500'>$</span>
 
-          <p className='text-foreground/70'>npx shadcn@latest add https://nindo.rasengan.dev/editors/markdown.json</p>
+          <p className='text-foreground/70'>npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json</p>
 
           <div>
             <Button 
               size="icon"
               variant={"ghost"}
               className='text-foreground/70 hover:text-foreground'
+              onClick={() => {
+                navigator.clipboard.writeText("npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json");
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2000);
+              }}
             >
-              <Copy />
+             {isCopied ? <CheckCircle2 /> : <Copy />}
             </Button>
           </div>
-        </div> */}
+        </div>
 
         <div className="mt-8">
           <Link to="/docs">
@@ -67,10 +75,12 @@ const Page: PageComponent = () => {
             </Button>
           </Link>
           
-          <Button variant="outline" className="ml-4 text-foreground">
-            <span className="font-medium text-base text-sm">View Demo</span>
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link to="https://github.com/rasengan-dev/nindo" target='_blank'>
+            <Button variant="outline" className="ml-4 text-foreground">
+              <span className="font-medium text-base text-sm">View Source Code</span>
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </div>
 
