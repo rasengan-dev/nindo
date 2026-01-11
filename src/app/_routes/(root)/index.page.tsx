@@ -42,14 +42,14 @@ const Page: PageComponent = () => {
 
   return (
     <section className='w-full h-full flex flex-col items-center justify-center'>
-      <div className='flex flex-col items-center'>
-        <h1 className='max-w-[900px] text-5xl md:text-[60px] md:leading-[65px] text-pretty font-bold text-center text-foreground/60'>The flexible <span className='text-foreground'>Markdown Editor</span> for modern platforms</h1>
-        <p className='text-lg text-foreground/70 max-w-[700px] text-center mt-6 text-pretty'>Nindo is a highly extensible Markdown editor built for React, offering block awareness, live preview, and total control over your content.</p>
+      <div className='flex flex-col items-center w-full'>
+        <h1 className='max-w-[900px] w-full text-[40px] leading-[45px] md:text-5xl xl:text-[60px] md:leading-[65px] text-pretty font-bold text-center text-foreground/60'>The flexible <span className='text-foreground'>Markdown Editor</span> for modern platforms</h1>
+        <p className='text-sm md:text-lg text-foreground/70 w-full max-w-[500px] lg:max-w-[700px] text-center mt-6 text-pretty'>Nindo is a highly extensible Markdown editor built for React, offering block awareness, live preview, and total control over your content.</p>
 
-        <div className='max-w-[900px] w-auto h-[40px] border border-border bg-muted rounded-full px-4 flex gap-4 items-center mt-6 text-sm'>
+        <div className='inline-flex max-w-[600px] w-full h-[40px] border border-border bg-muted rounded-full px-4 flex gap-4 items-center mt-6 text-sm'>
           <span className='cursor-default text-foreground/70 hover:text-red-500'>$</span>
 
-          <p className='text-foreground/70'>npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json</p>
+          <p className='text-foreground/70 overflow-hidden text-ellipsis whitespace-nowrap'>npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json</p>
 
           <div>
             <Button 

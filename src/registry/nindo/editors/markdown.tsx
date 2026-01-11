@@ -409,7 +409,7 @@ const EditorToolbar: React.FC<{
 	setOrientation?: (orientation: Orientation) => void
 }> = ({ actions, onAction, currentBlock, undo, redo, canUndo, canRedo, mode, setMode, orientation = "horizontal", setOrientation }) => {
   return (
-    <div className="flex items-center justify-between gap-2 h-[50px] px-2 py-3 bg-background border-b border-border">
+    <div className="flex items-center justify-between gap-2 h-[50px] px-2 py-3 bg-background border-b border-border overflow-x-auto overflow-y-hidden">
       <div className='flex items-center gap-2'>
         <div className="flex items-center gap-1">
           {actions.slice(0, 4).map(action => (
