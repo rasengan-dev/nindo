@@ -1,11 +1,11 @@
 ---
 metadata:
-    title: Installation | Nindo
-    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+  title: Installation | Nindo
+  description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
 toc: true
 ---
 
-import { MarkdownEditor } from "@/registry/nindo/editors/markdown";
+import { MarkdownEditor } from "@/registry/nindo/editors/markdown-editor";
 import Pagination from "@/components/features/docs/molecules/pagination";
 
 # Installation
@@ -20,23 +20,23 @@ Before installing Nindo, ensure you have:
 - [shadcn/ui](https://ui.shadcn.com/docs/installation) configured
 - [Typescript](https://typescriptlang.org) recommended
 
-## Setup 
+## Setup
 
 ```bash title="Terminal"
-npx shadcn-ui@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
+npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
 ```
 
 This command will:
+
 - Download the `markdown-editor.tsx` file
 - Download required `shadcn ui` components like `button` and `card`.
 - Place them all in your `components/ui` directory
 - Install required dependencies such as [react-markdown](https://github.com/remarkjs/react-markdown), [lucide-react](https://lucide.dev), [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter), [@rasenganjs/theme](https://rasengan.dev/packages/theme) and others
 
-
 ## Usage
 
 ```tsx showLineNumbers title="Markdown Editor"
-import { MarkdownEditor } from '@/components/ui/markdown-editor';
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 
 export default function Page() {
   return (
@@ -51,14 +51,13 @@ export default function Page() {
 
 If you see the editor with toolbar and preview, you're good to go! 🎉
 
-
-<Pagination 
-    previous={{
-        to: "/docs",
-        label: "Introduction"
-    }}
-    next={{
-        to: "/docs/quick-start",
-        label: "Quick Start"
-    }}
+<Pagination
+  previous={{
+    to: "/docs",
+    label: "Introduction",
+  }}
+  next={{
+    to: "/docs/quick-start",
+    label: "Quick Start",
+  }}
 />

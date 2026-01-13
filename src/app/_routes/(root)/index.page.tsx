@@ -1,5 +1,5 @@
 import { Button } from '@/components/common/ui/button';
-import { MarkdownEditor } from '@/registry/nindo/editors/markdown';
+import { MarkdownEditor } from '@/registry/nindo/editors/markdown-editor';
 import { Copy, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Link, PageComponent } from 'rasengan';
 import { useState } from 'react';
@@ -19,7 +19,7 @@ Start writing your **markdown** content here.
 ## Installation
 
 \`\`\`bash
-npx shadcn-ui@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
+npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
 \`\`\`
 
 ## Usage

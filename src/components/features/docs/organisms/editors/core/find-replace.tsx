@@ -1,6 +1,6 @@
 'use client';
  
-import { Editor } from '@/registry/nindo/editors/markdown';
+import { Editor } from '@/registry/nindo/editors/markdown-editor';
 import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
 import { useState, useRef } from 'react';

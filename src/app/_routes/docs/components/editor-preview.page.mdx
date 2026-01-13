@@ -1,11 +1,11 @@
 ---
 metadata:
-    title: Editor Preview | Components | Nindo
-    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+  title: Editor Preview | Components | Nindo
+  description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
 toc: true
 ---
 
-import { Editor } from "@/registry/nindo/editors/markdown";
+import { Editor } from "@/registry/nindo/editors/markdown-editor";
 
 import Pagination from "@/components/features/docs/molecules/pagination";
 import Note from "@/components/features/docs/molecules/note";
@@ -18,21 +18,20 @@ The `Editor.Preview` component renders the live markdown preview with syntax hig
 ## Import
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
+import { Editor } from "@/components/ui/markdown-editor";
 
 // Use as
-<Editor.Preview />
+<Editor.Preview />;
 ```
 
 ## Overview
 
 `Editor.Preview` takes raw markdown content and renders it as beautifully styled HTML using:
+
 - `react-markdown` for markdown parsing
 - `remark-gfm` for GitHub Flavored Markdown support
 - `react-syntax-highlighter` for code syntax highlighting
 - Custom typography components for consistent styling
-
-
 
 ## Props
 
@@ -47,6 +46,7 @@ import { Editor } from '@/components/ui/markdown-editor';
 ```
 
 **Supported Markdown Features:**
+
 - Headings (H1-H6)
 - Bold (`**text**`) and italic (`_text_`)
 - Links (`[text](url)`)
@@ -57,8 +57,6 @@ import { Editor } from '@/components/ui/markdown-editor';
 - Tables (via GFM)
 - Strikethrough (via GFM)
 - Task lists (via GFM)
-
-
 
 ### `dark`
 
@@ -76,17 +74,16 @@ import { Editor } from '@/components/ui/markdown-editor';
 ```
 
 **Effect:**
+
 - `false` → Uses `oneLight` syntax highlighting theme
 - `true` → Uses `oneDark` syntax highlighting theme
-
-
 
 ## Basic Usage
 
 ### Simple Preview
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
+import { Editor } from "@/components/ui/markdown-editor";
 
 export default function PreviewDemo() {
   const markdown = `
@@ -112,13 +109,13 @@ This is a **markdown** preview with _formatting_.
 ### With State
 
 ```tsx showLineNumbers
-'use client';
+"use client";
 
-import { Editor } from '@/components/ui/markdown-editor';
-import { useState } from 'react';
+import { Editor } from "@/components/ui/markdown-editor";
+import { useState } from "react";
 
 export default function LivePreview() {
-  const [content, setContent] = useState('# Start typing...');
+  const [content, setContent] = useState("# Start typing...");
 
   return (
     <div className="grid grid-cols-2 gap-4 h-screen p-4">
@@ -127,42 +124,33 @@ export default function LivePreview() {
         onChange={(e) => setContent(e.target.value)}
         className="p-4 border rounded-lg font-mono"
       />
-      
+
       <Editor.Preview content={content} />
     </div>
   );
 }
 ```
 
-
-
 ### Dark Mode Integration
 
-```tsx showLineNumbers
-'use client';
+````tsx showLineNumbers
+"use client";
 
-import { Editor } from '@/components/ui/markdown-editor';
-import { useTheme } from '@rasenganjs/theme';
+import { Editor } from "@/components/ui/markdown-editor";
+import { useTheme } from "@rasenganjs/theme";
 
 export default function ThemedPreview() {
   const { isDark } = useTheme();
-  const markdown = '# Hello World\n\n```javascript\nconst x = 10;\n```';
+  const markdown = "# Hello World\n\n```javascript\nconst x = 10;\n```";
 
-  return (
-    <Editor.Preview 
-      content={markdown} 
-      dark={isDark}
-    />
-  );
+  return <Editor.Preview content={markdown} dark={isDark} />;
 }
-```
-
-
+````
 
 ### Read-Only Markdown Viewer
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
+import { Editor } from "@/components/ui/markdown-editor";
 
 export default function ArticleViewer({ article }: { article: string }) {
   return (
@@ -173,8 +161,6 @@ export default function ArticleViewer({ article }: { article: string }) {
 }
 ```
 
-
-
 ## Rendered Elements
 
 The preview component renders markdown with custom styled components:
@@ -183,19 +169,23 @@ The preview component renders markdown with custom styled components:
 
 ```markdown
 # H1 Heading
+
 ## H2 Heading
+
 ### H3 Heading
+
 #### H4 Heading
+
 ##### H5 Heading
+
 ###### H6 Heading
 ```
 
 **Styles:**
+
 - H1: `text-4xl font-semibold mt-4 mb-5` (responsive: `sm:text-3xl`)
 - H2: `text-xl font-medium mt-8 mb-3`
 - H3-H6: `text-lg/md font-medium mt-8 mb-3`
-
-
 
 ### Paragraphs
 
@@ -204,11 +194,10 @@ This is a paragraph with **bold** and _italic_ text.
 ```
 
 **Styles:**
+
 - `text-sm font-medium leading-relaxed`
 - First paragraph has no top margin
 - Subsequent paragraphs: `mt-6`
-
-
 
 ### Links
 
@@ -217,14 +206,14 @@ This is a paragraph with **bold** and _italic_ text.
 ```
 
 **Styles:**
+
 - `text-primary font-semibold underline underline-offset-4 cursor-pointer`
 - Automatically styled with primary theme color
-
-
 
 ### Lists
 
 **Unordered:**
+
 ```markdown
 - Item 1
 - Item 2
@@ -232,6 +221,7 @@ This is a paragraph with **bold** and _italic_ text.
 ```
 
 **Ordered:**
+
 ```markdown
 1. First
 2. Second
@@ -239,10 +229,9 @@ This is a paragraph with **bold** and _italic_ text.
 ```
 
 **Styles:**
+
 - Container: `my-6 ml-6 list-decimal`
 - List items: `mt-2 text-sm font-medium`
-
-
 
 ### Blockquotes
 
@@ -252,10 +241,9 @@ This is a paragraph with **bold** and _italic_ text.
 ```
 
 **Styles:**
+
 - `inline-block pl-2 border-l-4 border-l-border`
 - Left border accent for visual distinction
-
-
 
 ### Inline Code
 
@@ -264,10 +252,9 @@ Use `const x = 10;` for inline code.
 ```
 
 **Styles:**
+
 - `bg-muted rounded-md px-[0.3rem] py-[0.2rem] font-mono text-[0.9rem]`
 - Subtle background with rounded corners
-
-
 
 ### Code Blocks
 
@@ -280,6 +267,7 @@ function greet(name) {
 ````
 
 **Features:**
+
 - ✅ Syntax highlighting for 180+ languages
 - ✅ Language label in header
 - ✅ Copy to clipboard button
@@ -288,16 +276,16 @@ function greet(name) {
 - ✅ Light/Dark theme support
 
 **Supported Languages:**
+
 - JavaScript, TypeScript, Python, Java, C++, Rust
 - HTML, CSS, SCSS, JSON, YAML
 - Bash, Shell, SQL, GraphQL
 - And many more...
 
-
-
 ## Code Block Copy Feature
 
 Every code block includes a copy button that:
+
 1. Copies the code to clipboard
 2. Shows checkmark icon for 2 seconds
 3. Returns to copy icon
@@ -309,16 +297,18 @@ Every code block includes a copy button that:
 // → After 2s: CheckCircle2 → Copy
 ```
 
-
-
 ## Examples
 
 ### Blog Post Viewer
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
+import { Editor } from "@/components/ui/markdown-editor";
 
-export default function BlogPost({ post }: { post: { title: string; content: string } }) {
+export default function BlogPost({
+  post,
+}: {
+  post: { title: string; content: string };
+}) {
   return (
     <article className="container mx-auto py-12">
       <h1 className="text-5xl font-bold mb-8">{post.title}</h1>
@@ -328,12 +318,10 @@ export default function BlogPost({ post }: { post: { title: string; content: str
 }
 ```
 
-
-
 ### Documentation Page
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
+import { Editor } from "@/components/ui/markdown-editor";
 
 export default function DocsPage({ markdown }: { markdown: string }) {
   return (
@@ -344,19 +332,17 @@ export default function DocsPage({ markdown }: { markdown: string }) {
 }
 ```
 
-
-
 ### Markdown Preview with Tabs
 
 ```tsx showLineNumbers
-'use client';
+"use client";
 
-import { Editor } from '@/components/ui/markdown-editor';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useState } from 'react';
+import { Editor } from "@/components/ui/markdown-editor";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 
 export default function TabbedPreview() {
-  const [content, setContent] = useState('# Content');
+  const [content, setContent] = useState("# Content");
 
   return (
     <Tabs defaultValue="write" className="h-screen">
@@ -364,7 +350,7 @@ export default function TabbedPreview() {
         <TabsTrigger value="write">Write</TabsTrigger>
         <TabsTrigger value="preview">Preview</TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value="write" className="h-full">
         <Editor.Core
           defaultContent={content}
@@ -372,7 +358,7 @@ export default function TabbedPreview() {
           className="w-full h-full p-4 font-mono"
         />
       </TabsContent>
-      
+
       <TabsContent value="preview" className="h-full">
         <Editor.Preview content={content} />
       </TabsContent>
@@ -381,18 +367,16 @@ export default function TabbedPreview() {
 }
 ```
 
-
-
 ### Side-by-Side Editor and Preview
 
 ```tsx showLineNumbers
-'use client';
+"use client";
 
-import { Editor } from '@/components/ui/markdown-editor';
-import { useState } from 'react';
+import { Editor } from "@/components/ui/markdown-editor";
+import { useState } from "react";
 
 export default function SplitView() {
-  const [content, setContent] = useState('# Split View');
+  const [content, setContent] = useState("# Split View");
 
   return (
     <div className="grid grid-cols-2 gap-4 h-screen p-4">
@@ -415,15 +399,19 @@ export default function SplitView() {
 }
 ```
 
-
-
 ### Markdown with Custom Wrapper
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Editor } from "@/components/ui/markdown-editor";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export default function CardPreview({ title, markdown }: { title: string; markdown: string }) {
+export default function CardPreview({
+  title,
+  markdown,
+}: {
+  title: string;
+  markdown: string;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -437,24 +425,22 @@ export default function CardPreview({ title, markdown }: { title: string; markdo
 }
 ```
 
-
-
 ### Loading State
 
 ```tsx showLineNumbers
-'use client';
+"use client";
 
-import { Editor } from '@/components/ui/markdown-editor';
-import { useState, useEffect } from 'react';
+import { Editor } from "@/components/ui/markdown-editor";
+import { useState, useEffect } from "react";
 
 export default function AsyncPreview({ articleId }: { articleId: string }) {
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/articles/${articleId}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setContent(data.content);
         setIsLoading(false);
       });
@@ -468,8 +454,6 @@ export default function AsyncPreview({ articleId }: { articleId: string }) {
 }
 ```
 
-
-
 ### Empty State
 
 When `content` is empty, the preview shows:
@@ -482,39 +466,37 @@ When `content` is empty, the preview shows:
 Custom empty state:
 
 ```tsx showLineNumbers
-{content ? (
-  <Editor.Preview content={content} />
-) : (
-  <div className="p-8 text-center text-muted-foreground">
-    <p>No content to preview</p>
-  </div>
-)}
+{
+  content ? (
+    <Editor.Preview content={content} />
+  ) : (
+    <div className="p-8 text-center text-muted-foreground">
+      <p>No content to preview</p>
+    </div>
+  );
+}
 ```
-
-
 
 ## Styling
 
 ### Container
 
 The preview is wrapped in:
+
 ```tsx showLineNumbers
 <div className="flex-1 overflow-y-auto bg-muted/30">
-  <div className="p-8 max-w-3xl mx-auto">
-    {/* Rendered content */}
-  </div>
+  <div className="p-8 max-w-3xl mx-auto">{/* Rendered content */}</div>
 </div>
 ```
 
 **Styles:**
+
 - `flex-1` → Takes available height
 - `overflow-y-auto` → Scrollable for long content
 - `bg-muted/30` → Subtle background
 - `p-8` → 32px padding
 - `max-w-3xl` → Max width 768px
 - `mx-auto` → Centered horizontally
-
-
 
 ### Custom Width
 
@@ -524,8 +506,6 @@ The preview is wrapped in:
   <Editor.Preview content={content} />
 </div>
 ```
-
-
 
 ### Custom Background
 
@@ -537,8 +517,6 @@ The preview is wrapped in:
 </div>
 ```
 
-
-
 ## GitHub Flavored Markdown (GFM)
 
 The preview supports GFM features via `remark-gfm`:
@@ -547,20 +525,16 @@ The preview supports GFM features via `remark-gfm`:
 
 ```markdown
 | Feature | Supported |
-|---------|-----------|
+| ------- | --------- |
 | Tables  | ✅        |
 | Lists   | ✅        |
 ```
-
-
 
 ### Strikethrough
 
 ```markdown
 ~~This text is crossed out~~
 ```
-
-
 
 ### Task Lists
 
@@ -569,37 +543,31 @@ The preview supports GFM features via `remark-gfm`:
 - [ ] Pending task
 ```
 
-
-
 ### Autolinks
 
 ```markdown
 https://example.com becomes clickable automatically
 ```
 
-
-
 ## Performance Considerations
 
 ### Large Documents
 
 For markdown content > 10,000 characters:
+
 - Preview renders immediately (no debouncing needed)
 - Browser handles scrolling efficiently
 - Code blocks limited to `max-height: 500px`
 
-
-
 ## Accessibility
 
 The preview component:
+
 - ✅ Uses semantic HTML elements
 - ✅ Maintains proper heading hierarchy
 - ✅ Links are keyboard accessible
 - ✅ Code blocks have language labels
 - ✅ Copy button has visual feedback
-
-
 
 ## Troubleshooting
 
@@ -609,19 +577,19 @@ The preview component:
 
 **Solution**: Ensure language is specified in markdown:
 
-~~~markdown
+````markdown
 ❌ Bad:
+
 ```
 code here
 ```
 
 ✅ Good:
+
 ```javascript
 code here
 ```
-~~~
-
-
+````
 
 ### Copy button not working
 
@@ -638,8 +606,6 @@ if (navigator.clipboard) {
 }
 ```
 
-
-
 ### Dark mode not applying
 
 **Problem**: Dark syntax theme not showing
@@ -647,17 +613,15 @@ if (navigator.clipboard) {
 **Solution**: Ensure `dark` prop is passed correctly:
 
 ```tsx showLineNumbers
-import { useTheme } from '@/rasenganjs/theme';
+import { useTheme } from "@/rasenganjs/theme";
 
 const { isDark } = useTheme();
 
-<Editor.Preview 
-  content={content} 
-  dark={isDark}  // ✅ Pass theme state
-/>
+<Editor.Preview
+  content={content}
+  dark={isDark} // ✅ Pass theme state
+/>;
 ```
-
-
 
 ### Markdown not rendering
 
@@ -668,8 +632,6 @@ const { isDark } = useTheme();
 ```bash
 npm install react-markdown remark-gfm react-syntax-highlighter
 ```
-
-
 
 ## Integration with MarkdownEditor
 
@@ -683,20 +645,18 @@ The preview is automatically included in `MarkdownEditor`:
 To use standalone:
 
 ```tsx showLineNumbers
-import { Editor } from '@/components/ui/markdown-editor';
+import { Editor } from "@/components/ui/markdown-editor";
 
-<Editor.Preview content={yourMarkdown} />
+<Editor.Preview content={yourMarkdown} />;
 ```
 
-
-
-<Pagination 
-    previous={{
-       to: "/docs/components/editor-core",
-        label: "Editor Core"
-    }}
-    next={{
-        to: "/docs/components/editor-toolbar",
-        label: "Editor Toolbar"
-    }}
+<Pagination
+  previous={{
+    to: "/docs/components/editor-core",
+    label: "Editor Core",
+  }}
+  next={{
+    to: "/docs/components/editor-toolbar",
+    label: "Editor Toolbar",
+  }}
 />

@@ -1,6 +1,6 @@
 'use client';
  
-import { Editor } from '@/registry/nindo/editors/markdown';
+import { Editor } from '@/registry/nindo/editors/markdown-editor';
 import { useState, useRef } from 'react';
  
 export default function CountedEditorCore() {

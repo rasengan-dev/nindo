@@ -1,4 +1,4 @@
-import { MarkdownEditor } from "@/registry/nindo/editors/markdown";
+import { MarkdownEditor } from "@/registry/nindo/editors/markdown-editor";
 import { useState } from "react";
 
 export default function Page() {

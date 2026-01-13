@@ -279,14 +279,24 @@ const useEditor = (initialContent: string = '') => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+      const isUndo =
+        (e.metaKey || e.ctrlKey) &&
+        !e.shiftKey &&
+        e.key.toLowerCase() === 'z';
+
+      const isRedo =
+        ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'z')
+
+      if (isUndo) {
         e.preventDefault();
-        if (e.shiftKey) {
-          redo();
-        } else {
-          undo();
-        }
+        undo();
       }
+
+      if (isRedo) {
+        e.preventDefault();
+        redo();
+      }
+
     };
 
     window.addEventListener('keydown', handleKeyDown);
