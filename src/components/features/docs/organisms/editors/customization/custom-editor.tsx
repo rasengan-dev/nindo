@@ -11,7 +11,6 @@ import {
 } from '@/registry/nindo/editors/markdown-editor';
 import { Button } from '@/components/common/ui/button';
 import { Card } from '@/components/common/ui/card';
-// import { Separator } from '@/components/ui/separator';
 import { 
   Undo2,
   Redo2,
@@ -77,7 +76,7 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
           ))}
         </div>
  
-        {/* <Separator orientation="vertical" className="h-6" /> */}
+				<div className="w-px h-6 bg-border" />
  
         <div className="flex items-center gap-1">
           {actions.slice(4).map((action) => (
@@ -126,8 +125,8 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
             <Eye className="h-4 w-4" />
           </Button>
         </div>
- 
-        {/* <Separator orientation="vertical" className="h-6" /> */}
+        
+				<div className="w-px h-6 bg-border" />
  
         <Button
           size="sm"
@@ -192,7 +191,6 @@ const CustomMarkdownEditor: React.FC = () => {
   const {
     content,
     selection,
-    blocks,
     currentBlock,
     updateContent,
     setSelection,

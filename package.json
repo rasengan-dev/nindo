@@ -8,9 +8,11 @@
     "build": "rasengan build",
     "registry:build": "shadcn build --output ./public/registry",
     "serve": "rasengan-serve ./static",
+    "test": "",
     "prepare": "husky"
   },
   "dependencies": {
+    "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.3",
     "@rasenganjs/image": "^1.0.0",
     "@rasenganjs/mdx": "1.2.0-beta.6",
