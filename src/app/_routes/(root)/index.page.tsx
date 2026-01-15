@@ -94,8 +94,22 @@ const Page: PageComponent = () => {
 };
 
 Page.metadata = {
-  title: "Nindo | Markdown Editor",
-  description: "The flexible Markdown Editor for modern platforms - Nindo is a highly extensible Markdown editor built for React, offering block awareness, live preview, and total control over your content.",
+  title: "Nindo - Markdown Editor",
+  description: "Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.",
+  openGraph: {
+    title: 'Nindo - Markdown Editor',
+    description:
+      'Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.',
+    url: 'https://rasengan.dev',
+    image: 'https://nindo.rasengan.dev/assets/images/nindo.png',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nindo - Markdown Editor',
+    description:
+      'Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.',
+    image: 'https://nindo.rasengan.dev/assets/images/nindo.png',
+  },
 }
 
 export default Page;
