@@ -39,12 +39,6 @@ Ensure you have Nindo installed:
 npx shadcn@latest add https://nindo.rasengan.dev/registry/markdown-editor.json
 ```
 
-You'll also need the following shadcn/ui components:
-```bash
-npx shadcn@latest add separator
-```
-
-
 ## Step 1: Project Setup
 
 create a reusable component:
@@ -69,7 +63,6 @@ import {
 } from '@/components/ui/markdown-editor';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { 
   Bold, 
   Italic, 
@@ -161,7 +154,7 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
           ))}
         </div>
 
-        <Separator orientation="vertical" className="h-6" />
+        <div className="w-px h-6 bg-border" />
 
         {/* Block Formatting */}
         <div className="flex items-center gap-1">
@@ -214,7 +207,7 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
           </Button>
         </div>
 
-        <Separator orientation="vertical" className="h-6" />
+        <div className="w-px h-6 bg-border" />
 
         {/* History Controls */}
         <Button
@@ -438,7 +431,6 @@ import {
 } from '@/components/ui/markdown-editor';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { 
   Undo2,
   Redo2,
@@ -504,7 +496,7 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
           ))}
         </div>
 
-        <Separator orientation="vertical" className="h-6" />
+        <div className="w-px h-6 bg-border" />
 
         <div className="flex items-center gap-1">
           {actions.slice(4).map((action) => (
@@ -554,7 +546,7 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({
           </Button>
         </div>
 
-        <Separator orientation="vertical" className="h-6" />
+        <div className="w-px h-6 bg-border" />
 
         <Button
           size="sm"
