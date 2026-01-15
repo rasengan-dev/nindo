@@ -6,6 +6,9 @@ toc: true
 ---
 
 
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+
 # useEditor Hook
 
 The `useEditor` hook is the core state management solution for Nindo. It handles content, selection tracking, block parsing, and undo/redo history with a simple, intuitive API.
@@ -937,3 +940,14 @@ function useAutoSave(content: string) {
 const editor = useEditor('');
 useAutoSave(editor.content);
 ```
+
+<Pagination
+  previous={{
+    to: "/docs/components/markdown-toolbar",
+    label: "Markdown Toolbar",
+  }}
+  next={{
+    to: "/docs/hooks/use-editor-shortcuts",
+    label: "useEditorShortcuts",
+  }}
+/>

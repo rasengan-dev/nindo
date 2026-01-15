@@ -7,7 +7,8 @@
     "dev": "rasengan dev",
     "build": "rasengan build",
     "registry:build": "shadcn build --output ./public/registry",
-    "serve": "rasengan-serve ./static"
+    "serve": "rasengan-serve ./static",
+    "prepare": "husky"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -36,6 +37,7 @@
     "@types/react-dom": "^19.2.0",
     "@types/react-syntax-highlighter": "^15.5.13",
     "cross-env": "^7.0.3",
+    "husky": "^9.1.7",
     "shadcn": "^3.6.3",
     "tsup": "^8.5.1",
     "tw-animate-css": "^1.3.4",

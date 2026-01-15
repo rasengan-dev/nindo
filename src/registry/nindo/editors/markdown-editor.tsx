@@ -317,7 +317,7 @@ const useEditor = (initialContent: string = '') => {
   };
 };
 
-const useMarkdownShortcuts = (
+const useEditorShortcuts = (
   textareaRef: React.RefObject<HTMLTextAreaElement | null>,
   updateContent: (content: string, selection?: SelectionState) => void
 ) => {
@@ -687,7 +687,7 @@ const MarkdownEditor = ({
 		canUndo,
 		canRedo
 	} = useEditor(defaultContent || "");
-	useMarkdownShortcuts(textareaRef, updateContent);
+	useEditorShortcuts(textareaRef, updateContent);
 
 	const handleToolbarAction = useCallback((action: ToolbarAction) => {
 		const result = action.handler(content, selection);
@@ -766,9 +766,10 @@ export {
   Editor,
   MarkdownEditor,
   useEditor,
-  useMarkdownShortcuts,
+  useEditorShortcuts,
   createToolbarActions,
   type ToolbarAction,
   type ViewMode,
-  type Orientation
+  type Orientation,
+  type Block
 };

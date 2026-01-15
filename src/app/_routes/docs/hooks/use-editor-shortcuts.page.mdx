@@ -1,0 +1,593 @@
+---
+metadata:
+    title: useEditorShortcuts | Hooks | Nindo
+    description: Nindo is a modern, extensible Markdown editor built with React and powered by Shadcn UI.
+toc: true
+---
+
+
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+
+# useEditorShortcuts Hook
+
+The `useEditorShortcuts` hook provides intelligent keyboard shortcuts and auto-pairing functionality for the markdown editor. It handles character pairing, tab indentation, and formatting shortcuts to enhance the writing experience.
+
+## Import
+```tsx showLineNumbers
+import { useEditorShortcuts } from '@/components/ui/markdown-editor';
+```
+
+## Overview
+
+`useEditorShortcuts` automatically adds:
+- **Auto-pairing** - Automatically closes brackets, quotes, and markdown syntax
+- **Tab handling** - Indents with 2 spaces instead of switching focus
+- **Formatting shortcuts** - `B` for bold, `I` for italic
+- **Smart cursor positioning** - Maintains cursor position after transformations
+
+
+
+## Signature
+```tsx showLineNumbers
+const useEditorShortcuts = (
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>,
+  updateContent: (content: string, selection?: SelectionState) => void
+) => void
+```
+
+### Parameters
+
+#### `textareaRef`
+
+- **Type**: `React.RefObject<HTMLTextAreaElement | null>`
+- **Required**: Yes
+- **Description**: Ref to the textarea element where shortcuts should be applied
+```tsx showLineNumbers
+const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+useEditorShortcuts(textareaRef, updateContent);
+
+<textarea ref={textareaRef} />
+```
+
+
+
+#### `updateContent`
+
+- **Type**: `(content: string, selection?: SelectionState) => void`
+- **Required**: Yes
+- **Description**: Callback to update editor content with optional cursor position
+```tsx showLineNumbers
+interface SelectionState {
+  start: number;
+  end: number;
+}
+
+const updateContent = (newContent: string, newSelection?: SelectionState) => {
+  setContent(newContent);
+  if (newSelection) setSelection(newSelection);
+};
+
+useEditorShortcuts(textareaRef, updateContent);
+```
+
+
+
+## Features
+
+### 1. Auto-Pairing
+
+Automatically inserts closing characters when you type opening ones.
+
+#### Supported Pairs
+
+| Opening | Closing | Use Case |
+|---------|---------|----------|
+| `**` | `**` | Bold text |
+| `_` | `_` | Italic text |
+| `` ` `` | `` ` `` | Inline code |
+| `[` | `]` | Link text |
+| `(` | `)` | Link URL |
+| `{` | `}` | Code/objects |
+| `"` | `"` | Quoted text |
+| `'` | `'` | Quoted text |
+
+#### Behavior
+```tsx showLineNumbers
+// User types: **
+// Result: **|**  (cursor positioned between)
+
+// User types: [
+// Result: [|]  (cursor positioned between)
+
+// User types: "
+// Result: "|"  (cursor positioned between)
+```
+
+**When it works:**
+- ✅ Only when cursor has no selection (selectionStart === selectionEnd)
+- ✅ Cursor automatically positioned between the pair
+- ✅ Prevents default browser behavior
+
+**When it doesn't work:**
+- ❌ When text is selected (prevents accidentally wrapping)
+- ❌ In middle of existing pairs (to avoid conflicts)
+
+
+
+### 2. Tab Handling
+
+Converts Tab key to 2-space indentation instead of switching focus.
+
+#### Behavior
+```tsx showLineNumbers
+// User presses Tab
+// Result: Inserts "  " (2 spaces) at cursor
+
+// Before:
+// Hello World|
+
+// After Tab:
+// Hello World  |
+
+// In code blocks:
+function example() {
+|  return true;
+}
+
+// After Tab:
+function example() {
+  |  return true;
+}
+```
+
+**Features:**
+- ✅ Prevents default tab navigation
+- ✅ Always inserts 2 spaces
+- ✅ Works with selections (replaces selected text)
+- ✅ Cursor positioned after spaces
+
+
+
+### 3. Bold Shortcut (B)
+
+Wraps selected text in `**` for bold formatting.
+
+#### Behavior
+```markdown
+// Before (with "Hello" selected):
+Hello World
+
+// After pressing B:
+**Hello** World
+   ^^^^^ (selection maintained)
+```
+
+**Requirements:**
+- ✅ Text must be selected (selectionStart !== selectionEnd)
+- ✅ Prevents default browser behavior
+- ✅ Maintains selection after formatting
+
+**When it doesn't work:**
+- ❌ When no text is selected (nothing happens)
+- ❌ When cursor is in empty space
+
+
+
+### 4. Italic Shortcut (I)
+
+Wraps selected text in `_` for italic formatting.
+
+#### Behavior
+```markdown
+// Before (with "important" selected):
+This is important text
+
+// After pressing I:
+This is _important_ text
+        ^^^^^^^^^^^ (selection maintained)
+```
+
+**Requirements:**
+- ✅ Text must be selected
+- ✅ Prevents default browser behavior
+- ✅ Maintains selection after formatting
+
+
+
+## Basic Usage
+
+### Minimal Setup
+```tsx showLineNumbers
+'use client';
+
+import { useEditorShortcuts } from '@/components/ui/markdown-editor';
+import { useState, useRef } from 'react';
+
+export default function EditorWithShortcuts() {
+  const [content, setContent] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const updateContent = (newContent: string) => {
+    setContent(newContent);
+  };
+
+  useEditorShortcuts(textareaRef, updateContent);
+
+  return (
+    <textarea
+      ref={textareaRef}
+      value={content}
+      onChange={(e) => setContent(e.target.value)}
+      className="w-full h-screen p-4 font-mono"
+    />
+  );
+}
+```
+
+
+
+### With useEditor Hook
+```tsx showLineNumbers
+'use client';
+
+import { useEditor, useEditorShortcuts } from '@/components/ui/markdown-editor';
+import { useRef } from 'react';
+
+export default function FullEditor() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { content, updateContent, setSelection } = useEditor('');
+
+  useEditorShortcuts(textareaRef, updateContent);
+
+  return (
+    <textarea
+      ref={textareaRef}
+      value={content}
+      onChange={(e) => updateContent(e.target.value)}
+      onSelect={() => {
+        if (textareaRef.current) {
+          setSelection({
+            start: textareaRef.current.selectionStart,
+            end: textareaRef.current.selectionEnd
+          });
+        }
+      }}
+      className="w-full h-screen p-4 font-mono"
+    />
+  );
+}
+```
+
+
+
+### With Editor.Core Component
+```tsx showLineNumbers
+'use client';
+
+import { useEditor, useEditorShortcuts, Editor } from '@/components/ui/markdown-editor';
+import { useRef } from 'react';
+
+export default function EditorWithCore() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { content, updateContent, setSelection } = useEditor('');
+
+  useEditorShortcuts(textareaRef, updateContent);
+
+  return (
+    <div className="h-screen">
+      <Editor.Core
+        content={content}
+        onChange={updateContent}
+        onSelectionChange={setSelection}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+
+
+## Advanced Examples
+
+### Add More Formatting Shortcuts
+```tsx showLineNumbers
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
+const useExtendedShortcuts = (
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>,
+  updateContent: (content: string, selection?: SelectionState) => void
+) => {
+  useEffect(() => {
+    const textarea = textareaRef?.current;
+    if (!textarea) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const { value, selectionStart, selectionEnd } = textarea;
+      const before = value.slice(0, selectionStart);
+      const after = value.slice(selectionEnd);
+      const selected = value.slice(selectionStart, selectionEnd);
+
+      // Strikethrough (Ctrl/Cmd + Shift + X)
+      if (e.key.toLowerCase() === 'x' && (e.ctrlKey || e.metaKey) && e.shiftKey && selected) {
+        e.preventDefault();
+        const newValue = `${before}~~${selected}~~${after}`;
+        updateContent(newValue);
+        
+        requestAnimationFrame(() => {
+          textarea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
+        });
+        return;
+      }
+
+      // Code (Ctrl/Cmd + E)
+      if (e.key.toLowerCase() === 'e' && (e.ctrlKey || e.metaKey) && selected) {
+        e.preventDefault();
+        const newValue = `${before}\`${selected}\`${after}`;
+        updateContent(newValue);
+        
+        requestAnimationFrame(() => {
+          textarea.setSelectionRange(selectionStart + 1, selectionEnd + 1);
+        });
+        return;
+      }
+
+      // Link (Ctrl/Cmd + K)
+      if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        const linkText = selected || 'link text';
+        const newValue = `${before}[${linkText}](url)${after}`;
+        updateContent(newValue);
+        
+        requestAnimationFrame(() => {
+          // Select "url" for quick replacement
+          const urlStart = selectionStart + linkText.length + 3;
+          textarea.setSelectionRange(urlStart, urlStart + 3);
+        });
+        return;
+      }
+    };
+
+    textarea.addEventListener('keydown', handleKeyDown, true);
+    return () => textarea.removeEventListener('keydown', handleKeyDown, true);
+  }, [textareaRef, updateContent]);
+};
+
+export default function ExtendedEditor() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [content, setContent] = useState('');
+
+  useExtendedShortcuts(textareaRef, setContent);
+
+  return (
+    <div>
+      <div className="text-sm text-muted-foreground mb-2">
+        Shortcuts: Ctrl+B (Bold), Ctrl+I (Italic), Ctrl+Shift+X (Strikethrough), 
+        Ctrl+E (Code), Ctrl+K (Link)
+      </div>
+      <textarea 
+        ref={textareaRef} 
+        value={content} 
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full h-96 p-4 font-mono border rounded"
+      />
+    </div>
+  );
+}
+```
+
+
+
+## Implementation Details
+
+### Event Listener Options
+
+The hook uses `capture: true` to ensure shortcuts are handled before other events:
+```tsx showLineNumbers
+textarea.addEventListener('keydown', handleKeyDown, true);
+//                                                    ^^^^
+//                                                    Capture phase
+```
+
+**Why capture phase?**
+- ✅ Handles events before they bubble up
+- ✅ Prevents conflicts with parent handlers
+- ✅ Ensures shortcuts work consistently
+
+
+
+### Cursor Positioning
+
+Uses `requestAnimationFrame` for reliable cursor positioning:
+```tsx showLineNumbers
+updateContent(newValue);
+
+// Restore cursor AFTER render
+requestAnimationFrame(() => {
+  textarea.setSelectionRange(cursorPos, cursorPos);
+});
+```
+
+**Why `requestAnimationFrame`?**
+- ✅ Ensures DOM has updated
+- ✅ Prevents cursor jump issues
+- ✅ Smoother user experience
+
+
+
+### Selection Preservation
+
+When formatting selected text, the selection is maintained:
+```tsx showLineNumbers
+// Before: "Hello" selected (start: 0, end: 5)
+// After bold: "**Hello**" with "Hello" still selected (start: 2, end: 7)
+
+textarea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
+//                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                         Offset by wrapper length
+```
+
+
+
+## Keyboard Shortcut Reference
+
+| Shortcut | Action | Condition |
+|----------|--------|-----------|
+| `**` | Auto-pair `****` | No selection |
+| `_` | Auto-pair `__` | No selection |
+| `` ` `` | Auto-pair ``` `` ``` | No selection |
+| `[` | Auto-pair `[]` | No selection |
+| `(` | Auto-pair `()` | No selection |
+| `{` | Auto-pair `{}` | No selection |
+| `"` | Auto-pair `""` | No selection |
+| `'` | Auto-pair `''` | No selection |
+| `Tab` | Insert 2 spaces | Always |
+| `B` | Bold selection | Text selected |
+| `I` | Italic selection | Text selected |
+
+
+
+## Performance Considerations
+
+### Event Handler Efficiency
+
+- ✅ Single event listener per textarea
+- ✅ Cleaned up on unmount
+- ✅ No memory leaks
+- ✅ Minimal performance impact
+
+### Best Practices
+
+1. **Don't create multiple instances:**
+```tsx showLineNumbers
+// ❌ Bad: Creates duplicate listeners
+useEditorShortcuts(textareaRef, updateContent);
+useEditorShortcuts(textareaRef, updateContent);
+
+// ✅ Good: Single instance
+useEditorShortcuts(textareaRef, updateContent);
+```
+
+2. **Stable updateContent reference:**
+```tsx showLineNumbers
+// ❌ Bad: New function each render
+useEditorShortcuts(textareaRef, (content) => setContent(content));
+
+// ✅ Good: Stable reference
+const updateContent = useCallback((content: string) => {
+  setContent(content);
+}, []);
+
+useEditorShortcuts(textareaRef, updateContent);
+```
+
+
+
+## Accessibility
+
+The shortcuts enhance accessibility:
+- ✅ Keyboard-only navigation works
+- ✅ Screen readers announce changes
+- ✅ Standard keyboard conventions (B, I)
+- ✅ No mouse required
+
+
+
+## Browser Compatibility
+
+Works across all modern browsers:
+- ✅ Chrome/Edge (Blink)
+- ✅ Firefox (Gecko)
+- ✅ Safari (WebKit)
+- ✅ Windows/macOS/Linux
+
+**Key differences:**
+- Windows/Linux: `Ctrl` key
+- macOS: `Cmd` key (handled automatically via `e.metaKey`)
+
+
+
+## Troubleshooting
+
+### Shortcuts not working
+
+**Problem:** Keyboard shortcuts don't trigger
+
+**Solution:** Ensure ref is attached to textarea:
+```tsx showLineNumbers
+// ❌ Bad: Ref not attached
+const textareaRef = useRef<HTMLTextAreaElement>(null);
+useEditorShortcuts(textareaRef, updateContent);
+
+<textarea />  // No ref!
+
+// ✅ Good: Ref attached
+<textarea ref={textareaRef} />
+```
+
+
+
+### Auto-pairing happens when it shouldn't
+
+**Problem:** Pairs insert even with selected text
+
+**Solution:** Check the condition - pairs only insert when `selectionStart === selectionEnd`
+
+
+
+### Tab switches focus instead of indenting
+
+**Problem:** Tab key moves to next element
+
+**Solution:** Ensure `e.preventDefault()` is called:
+```tsx showLineNumbers
+if (e.key === 'Tab') {
+  e.preventDefault();  // ← Critical!
+  // ... rest of logic
+}
+```
+
+
+
+### Cursor position wrong after formatting
+
+**Problem:** Cursor jumps to wrong position
+
+**Solution:** Use `requestAnimationFrame` and correct offset:
+```tsx showLineNumbers
+updateContent(newValue);
+
+requestAnimationFrame(() => {
+  textarea.setSelectionRange(
+    selectionStart + offset,  // Adjust for inserted characters
+    selectionEnd + offset
+  );
+});
+```
+
+
+
+## Integration with MarkdownEditor
+
+The hook is automatically included in `MarkdownEditor`:
+```tsx showLineNumbers
+<MarkdownEditor />
+// Includes useEditorShortcuts automatically
+```
+
+To use standalone, follow the basic usage examples above.
+
+<Pagination
+  previous={{
+    to: "/docs/hooks/use-editor",
+    label: "useEditor",
+  }}
+  next={{
+    to: "/docs/customization/custom-editor",
+    label: "Custom Editor",
+  }}
+/>
