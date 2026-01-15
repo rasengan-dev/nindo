@@ -1,6 +1,6 @@
 'use client';
  
-import { Editor, createToolbarActions, useEditor, ViewMode, Orientation } from '@/registry/nindo/editors/markdown';
+import { Editor, createToolbarActions, useEditor, ViewMode, Orientation } from '@/registry/nindo/editors/markdown-editor';
 import { useRef, useState } from 'react';
  
 export default function ToolbarWithOrientation() {

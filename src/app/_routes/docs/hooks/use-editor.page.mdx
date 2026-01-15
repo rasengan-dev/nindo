@@ -6,4 +6,948 @@ toc: true
 ---
 
 
+import Pagination from "@/components/features/docs/molecules/pagination";
+import Note from "@/components/features/docs/molecules/note";
+
 # useEditor Hook
+
+The `useEditor` hook is the core state management solution for Nindo. It handles content, selection tracking, block parsing, and undo/redo history with a simple, intuitive API.
+
+## Import
+```tsx showLineNumbers
+import { useEditor } from '@/components/ui/markdown-editor';
+```
+
+## Overview
+
+`useEditor` encapsulates all the state and logic needed to build a markdown editor:
+- **Content management** - Stores and updates markdown text
+- **Selection tracking** - Tracks cursor position and text selection
+- **Block parsing** - Automatically parses content into blocks
+- **History management** - Built-in undo/redo with keyboard shortcuts
+- **Current block detection** - Identifies the block at cursor position
+
+
+
+## Signature
+```tsx showLineNumbers
+const useEditor = (initialContent?: string) => {
+  // Returns editor state and methods
+}
+```
+
+### Parameters
+
+#### initialContent
+
+- **Type**: `string`
+- **Optional**: Yes
+- **Default**: `''` (empty string)
+- **Description**: Initial markdown content to populate the editor
+```tsx showLineNumbers
+// Empty editor
+const editor = useEditor();
+
+// Pre-populated editor
+const editor = useEditor('# Hello World\n\nWelcome to Nindo!');
+
+// Load from variable
+const savedContent = '## My Draft';
+const editor = useEditor(savedContent);
+```
+
+
+
+## Return Value
+
+The hook returns an object with the following properties:
+```tsx showLineNumbers
+interface EditorState {
+  // State
+  content: string;
+  selection: SelectionState;
+  blocks: Block[];
+  currentBlock: Block | null;
+  canUndo: boolean;
+  canRedo: boolean;
+  
+  // Methods
+  updateContent: (newContent: string, newSelection?: SelectionState) => void;
+  setSelection: (selection: SelectionState) => void;
+  undo: () => void;
+  redo: () => void;
+}
+```
+
+
+
+## Properties
+
+### content
+
+- **Type**: `string`
+- **Description**: Current markdown content in the editor
+```tsx showLineNumbers
+const { content } = useEditor('# Title');
+
+console.log(content); // "# Title"
+```
+
+**Use cases:**
+- Display content in preview
+- Save to backend
+- Calculate statistics (word count, etc.)
+- Export to file
+
+
+
+### selection
+
+- **Type**: `SelectionState`
+- **Description**: Current cursor position or selected text range
+```tsx showLineNumbers
+interface SelectionState {
+  start: number;  // Start position (character index)
+  end: number;    // End position (character index)
+}
+
+const { selection } = useEditor();
+
+// Cursor at position 10 (no selection)
+// selection = { start: 10, end: 10 }
+
+// Selected text from position 5 to 15
+// selection = { start: 5, end: 15 }
+```
+
+**Use cases:**
+- Apply formatting to selected text
+- Insert text at cursor position
+- Highlight current line
+- Context-aware toolbar
+
+
+
+### blocks
+
+- **Type**: `Block[]`
+- **Description**: Parsed array of blocks from the content (memoized)
+```tsx showLineNumbers
+interface Block {
+  id: string;
+  type: BlockType;  // 'paragraph' | 'heading' | 'code' | 'quote' | 'list' | 'image'
+  level?: number;   // For headings (1-6)
+  startOffset: number;
+  endOffset: number;
+  content: string;
+}
+
+const { blocks } = useEditor('# Title\n\nParagraph');
+
+console.log(blocks);
+// [
+//   { id: 'block-0', type: 'heading', level: 1, content: '# Title', ... },
+//   { id: 'block-1', type: 'paragraph', content: '', ... },
+//   { id: 'block-2', type: 'paragraph', content: 'Paragraph', ... }
+// ]
+```
+
+**Use cases:**
+- Display table of contents
+- Block-level operations (delete block, move block)
+- Navigation between blocks
+- Structure analysis
+
+
+
+### currentBlock
+
+- **Type**: `Block | null`
+- **Description**: The block at the current cursor position (memoized)
+```tsx showLineNumbers
+const { currentBlock, selection } = useEditor('# Title\n\nText');
+
+// When cursor is in the heading
+// currentBlock = { type: 'heading', level: 1, content: '# Title', ... }
+
+// When cursor is in the paragraph
+// currentBlock = { type: 'paragraph', content: 'Text', ... }
+```
+
+**Use cases:**
+- Context-aware toolbar (highlight active formatting)
+- Display current block type in status bar
+- Block-specific shortcuts
+- Smart formatting suggestions
+
+
+
+### canUndo
+
+- **Type**: `boolean`
+- **Description**: Whether undo action is available
+```tsx showLineNumbers
+const { canUndo, undo } = useEditor('Initial');
+
+console.log(canUndo); // false (at start of history)
+
+// Make a change
+updateContent('Modified');
+
+console.log(canUndo); // true (can undo to previous state)
+```
+
+**Use cases:**
+- Disable/enable undo button
+- Show undo availability in UI
+- Prevent unnecessary undo attempts
+
+
+
+### canRedo
+
+- **Type**: `boolean`
+- **Description**: Whether redo action is available
+```tsx showLineNumbers
+const { canRedo, redo, undo } = useEditor('Initial');
+
+console.log(canRedo); // false (nothing to redo)
+
+// Make changes and undo
+updateContent('Modified');
+undo();
+
+console.log(canRedo); // true (can redo)
+```
+
+**Use cases:**
+- Disable/enable redo button
+- Show redo availability in UI
+- Prevent unnecessary redo attempts
+
+
+
+## Methods
+
+### updateContent
+
+Updates the editor content and optionally the selection.
+
+**Signature:**
+```tsx showLineNumbers
+updateContent: (newContent: string, newSelection?: SelectionState) => void
+```
+
+**Parameters:**
+- `newContent` (required) - The new markdown content
+- `newSelection` (optional) - New cursor/selection position
+
+**Example:**
+```tsx showLineNumbers
+const { content, updateContent } = useEditor('Hello');
+
+// Simple content update
+updateContent('Hello World');
+
+// Update content and move cursor
+updateContent('Hello World', { start: 11, end: 11 });
+
+// Replace selected text
+const newText = content.slice(0, 5) + 'Nindo' + content.slice(10);
+updateContent(newText, { start: 5, end: 10 });
+```
+
+**Behavior:**
+- Adds change to history (enables undo)
+- Clears any forward history (can't redo after new change)
+- Triggers block re-parsing
+- Updates current block
+
+
+
+### setSelection
+
+Updates the cursor position or text selection without modifying content.
+
+**Signature:**
+```tsx showLineNumbers
+setSelection: (selection: SelectionState) => void
+```
+
+**Example:**
+```tsx showLineNumbers
+const { setSelection } = useEditor('Hello World');
+
+// Move cursor to position 5
+setSelection({ start: 5, end: 5 });
+
+// Select text from position 0 to 5
+setSelection({ start: 0, end: 5 });
+
+// Select all
+const length = content.length;
+setSelection({ start: 0, end: length });
+```
+
+**Use cases:**
+- Programmatic cursor movement
+- Text selection after formatting
+- Focus restoration
+- Navigation commands
+
+
+
+### undo
+
+Reverts to the previous state in history.
+
+**Signature:**
+```tsx showLineNumbers
+undo: () => void
+```
+
+**Example:**
+```tsx showLineNumbers
+const { content, updateContent, undo, canUndo } = useEditor('Initial');
+
+updateContent('Modified');
+console.log(content); // "Modified"
+
+if (canUndo) {
+  undo();
+  console.log(content); // "Initial"
+}
+```
+
+**Behavior:**
+- Moves backward in history
+- Restores previous content
+- Does nothing if at start of history
+- Keyboard shortcut: Ctrl/Cmd + Z (automatic)
+
+
+
+### redo
+
+Reapplies the next change in history.
+
+**Signature:**
+```tsx showLineNumbers
+redo: () => void
+```
+
+**Example:**
+```tsx showLineNumbers
+const { content, updateContent, undo, redo, canRedo } = useEditor('Initial');
+
+updateContent('Modified');
+undo();
+console.log(content); // "Initial"
+
+if (canRedo) {
+  redo();
+  console.log(content); // "Modified"
+}
+```
+
+**Behavior:**
+- Moves forward in history
+- Restores next content state
+- Does nothing if at end of history
+- Keyboard shortcut: Ctrl/Cmd + Shift + Z (automatic)
+
+
+
+## Basic Usage
+
+### Simple Editor
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+import { useRef } from 'react';
+
+export default function SimpleEditor() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { content, updateContent, setSelection } = useEditor('# Hello');
+
+  return (
+    <textarea
+      ref={textareaRef}
+      value={content}
+      onChange={(e) => updateContent(e.target.value)}
+      onSelect={() => {
+        if (textareaRef.current) {
+          setSelection({
+            start: textareaRef.current.selectionStart,
+            end: textareaRef.current.selectionEnd
+          });
+        }
+      }}
+      className="w-full h-screen p-4 font-mono"
+    />
+  );
+}
+```
+
+
+
+### With Preview
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+import { Editor } from '@/components/ui/markdown-editor';
+import { useRef } from 'react';
+
+export default function EditorWithPreview() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { content, selection, updateContent, setSelection } = useEditor('# Title');
+
+  return (
+    <div className="grid grid-cols-2 gap-4 h-screen p-4">
+      <Editor.Core
+        content={content}
+        onChange={updateContent}
+        onSelectionChange={setSelection}
+        textareaRef={textareaRef}
+      />
+      
+      <Editor.Preview content={content} />
+    </div>
+  );
+}
+```
+
+
+
+### With Toolbar
+```tsx showLineNumbers
+'use client';
+
+import { useEditor, createToolbarActions, Editor } from '@/components/ui/markdown-editor';
+import { useRef } from 'react';
+
+export default function FullEditor() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const toolbarActions = createToolbarActions();
+  
+  const {
+    content,
+    selection,
+    currentBlock,
+    updateContent,
+    setSelection,
+    undo,
+    redo,
+    canUndo,
+    canRedo
+  } = useEditor('# Start Writing');
+
+  const handleAction = (action: any) => {
+    const result = action.handler(content, selection);
+    updateContent(result.content, result.selection);
+    
+    // Restore focus
+    setTimeout(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(
+        result.selection.start,
+        result.selection.end
+      );
+    }, 0);
+  };
+
+  return (
+    <div className="h-screen flex flex-col">
+      <Editor.Toolbar
+        actions={toolbarActions}
+        onAction={handleAction}
+        currentBlock={currentBlock}
+        undo={undo}
+        redo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+      />
+      
+      <Editor.Core
+        content={content}
+        onChange={updateContent}
+        onSelectionChange={setSelection}
+        textareaRef={textareaRef}
+      />
+    </div>
+  );
+}
+```
+
+
+
+## Advanced Examples
+
+### Auto-Save with useEditor
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+import { useEffect, useState } from 'react';
+
+export default function AutoSaveEditor() {
+  const { content, updateContent } = useEditor('');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!content) return;
+      
+      setIsSaving(true);
+      try {
+        await fetch('/api/save', {
+          method: 'POST',
+          body: JSON.stringify({ content })
+        });
+        setLastSaved(new Date());
+      } finally {
+        setIsSaving(false);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [content]);
+
+  return (
+    <div>
+      <div className="text-sm text-muted-foreground mb-2">
+        {isSaving ? 'Saving...' : lastSaved ? `Saved at ${lastSaved.toLocaleTimeString()}` : 'Not saved'}
+      </div>
+      {/* Editor UI */}
+    </div>
+  );
+}
+```
+
+
+
+### Character Limit
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+
+export default function LimitedEditor() {
+  const MAX_LENGTH = 5000;
+  const { content, updateContent } = useEditor('');
+
+  const handleUpdate = (newContent: string) => {
+    if (newContent.length <= MAX_LENGTH) {
+      updateContent(newContent);
+    }
+  };
+
+  const remaining = MAX_LENGTH - content.length;
+
+  return (
+    <div>
+      <div className={`text-sm mb-2 ${remaining < 100 ? 'text-red-500' : 'text-muted-foreground'}`}>
+        {remaining} / {MAX_LENGTH} characters remaining
+      </div>
+      {/* Editor UI with handleUpdate instead of updateContent */}
+    </div>
+  );
+}
+```
+
+
+
+### Table of Contents
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+
+export default function EditorWithTOC() {
+  const { content, blocks, setSelection } = useEditor('# Title\n\n## Section 1\n\n## Section 2');
+
+  const headings = blocks.filter(b => b.type === 'heading');
+
+  const jumpToHeading = (block: Block) => {
+    setSelection({ start: block.startOffset, end: block.startOffset });
+    // Scroll to position
+  };
+
+  return (
+    <div className="grid grid-cols-[250px_1fr] gap-4">
+      {/* Table of Contents */}
+      <div className="border-r pr-4">
+        <h3 className="font-bold mb-2">Contents</h3>
+        <ul className="space-y-1">
+          {headings.map(block => (
+            <li
+              key={block.id}
+              className="cursor-pointer hover:text-primary"
+              style={{ paddingLeft: `${(block.level || 1) * 8}px` }}
+              onClick={() => jumpToHeading(block)}
+            >
+              {block.content.replace(/^#+\s/, '')}
+            </li>
+          ))}
+        </ul>
+      </div>
+      
+      {/* Editor */}
+      <div>{/* Editor UI */}</div>
+    </div>
+  );
+}
+```
+
+
+
+### Word Count Statistics
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+
+export default function EditorWithStats() {
+  const { content, blocks } = useEditor('');
+
+  const stats = {
+    characters: content.length,
+    words: content.split(/\s+/).filter(Boolean).length,
+    lines: content.split('\n').length,
+    paragraphs: blocks.filter(b => b.type === 'paragraph' && b.content.trim()).length,
+    headings: blocks.filter(b => b.type === 'heading').length,
+    codeBlocks: blocks.filter(b => b.type === 'code').length,
+  };
+
+  return (
+    <div>
+      {/* Editor UI */}
+      
+      <div className="border-t p-4 text-sm text-muted-foreground">
+        <div className="grid grid-cols-6 gap-4">
+          <div>{stats.characters} chars</div>
+          <div>{stats.words} words</div>
+          <div>{stats.lines} lines</div>
+          <div>{stats.paragraphs} paragraphs</div>
+          <div>{stats.headings} headings</div>
+          <div>{stats.codeBlocks} code blocks</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+
+
+### Search and Replace
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+export default function SearchReplaceEditor() {
+  const { content, updateContent } = useEditor('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [replaceTerm, setReplaceTerm] = useState('');
+
+  const handleReplace = () => {
+    const newContent = content.replace(new RegExp(searchTerm, 'g'), replaceTerm);
+    updateContent(newContent);
+  };
+
+  const matchCount = (content.match(new RegExp(searchTerm, 'g')) || []).length;
+
+  return (
+    <div className="h-screen flex flex-col">
+      <div className="border-b p-4 flex gap-2 items-center">
+        <Input
+          placeholder="Find..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-48"
+        />
+        <Input
+          placeholder="Replace with..."
+          value={replaceTerm}
+          onChange={(e) => setReplaceTerm(e.target.value)}
+          className="w-48"
+        />
+        <Button onClick={handleReplace} disabled={!searchTerm}>
+          Replace All ({matchCount})
+        </Button>
+      </div>
+      
+      {/* Editor UI */}
+    </div>
+  );
+}
+```
+
+
+
+### Custom History Limit
+```tsx showLineNumbers
+'use client';
+
+import { useEditor } from '@/components/ui/markdown-editor';
+import { useEffect } from 'react';
+
+export default function LimitedHistoryEditor() {
+  const editor = useEditor('');
+  const MAX_HISTORY = 50;
+
+  // Extend useEditor with custom history management
+  useEffect(() => {
+    // This is just a conceptual example
+    // You'd need to modify the hook itself for production use
+    if (editor.history?.length > MAX_HISTORY) {
+      // Trim old history
+    }
+  }, [editor.content]);
+
+  return <div>{/* Editor UI */}</div>;
+}
+```
+
+
+
+## State Management Details
+
+### History Stack
+
+The hook maintains a history stack internally:
+```tsx showLineNumbers
+// Initial state
+history = ['Initial content']
+historyIndex = 0
+
+// After first change
+updateContent('Modified');
+history = ['Initial content', 'Modified']
+historyIndex = 1
+
+// After undo
+undo();
+history = ['Initial content', 'Modified']  // Stack preserved
+historyIndex = 0
+
+// After new change (clears forward history)
+updateContent('New content');
+history = ['Initial content', 'New content']  // 'Modified' removed
+historyIndex = 1
+```
+
+
+
+### Block Parsing
+
+Blocks are automatically parsed using `useMemo`:
+```tsx showLineNumbers
+const blocks = useMemo(() => parseBlocks(content), [content]);
+```
+
+**Performance:**
+- Only re-parses when content changes
+- Cached between renders
+- Efficient for large documents (< 10ms for 1000 lines)
+
+
+
+### Current Block Detection
+
+Current block is detected using `useMemo`:
+```tsx showLineNumbers
+const currentBlock = useMemo(
+  () => getCurrentBlock(blocks, selection.start),
+  [blocks, selection]
+);
+```
+
+**Performance:**
+- Only recalculates when blocks or selection changes
+- O(n) complexity where n = number of blocks
+- Instant for typical documents (< 100 blocks)
+
+
+
+## Keyboard Shortcuts
+
+The hook automatically registers keyboard shortcuts:
+
+| Shortcut | Action | Platform |
+|----------|--------|----------|
+| Ctrl + Z | Undo | Windows/Linux |
+| Cmd + Z | Undo | macOS |
+| Ctrl + Shift + Z | Redo | Windows/Linux |
+| Cmd + Shift + Z | Redo | macOS |
+
+**Note:** These are global shortcuts that work even when editor is not focused. Use with caution in complex UIs.
+
+
+
+## Performance Considerations
+
+### Memory Usage
+
+- History grows with each change
+- Consider implementing history limits for long editing sessions
+- Typical usage: ~50-100 history entries = ~50KB memory
+
+### Optimization Tips
+
+1. **Debounce updates for auto-save:**
+```tsx showLineNumbers
+import { useDebouncedCallback } from 'use-debounce';
+
+const debouncedSave = useDebouncedCallback(
+  (content: string) => {
+    // Save to backend
+  },
+  1000
+);
+
+useEffect(() => {
+  debouncedSave(content);
+}, [content]);
+```
+
+2. **Limit history size:**
+```tsx showLineNumbers
+// In updateContent
+setHistory(prev => {
+  const newHistory = [...prev.slice(0, historyIndex + 1), newContent];
+  return newHistory.slice(-50); // Keep last 50 entries
+});
+```
+
+3. **Virtualize long block lists:**
+```tsx showLineNumbers
+import { Virtuoso } from 'react-virtuoso';
+
+<Virtuoso
+  data={blocks}
+  itemContent={(index, block) => <BlockComponent block={block} />}
+/>
+```
+
+
+
+## TypeScript Support
+
+The hook is fully typed:
+```tsx showLineNumbers
+interface SelectionState {
+  start: number;
+  end: number;
+}
+
+interface Block {
+  id: string;
+  type: BlockType;
+  level?: number;
+  startOffset: number;
+  endOffset: number;
+  content: string;
+}
+
+type BlockType = 'paragraph' | 'heading' | 'code' | 'quote' | 'list' | 'image';
+
+function useEditor(initialContent?: string): {
+  content: string;
+  selection: SelectionState;
+  blocks: Block[];
+  currentBlock: Block | null;
+  updateContent: (newContent: string, newSelection?: SelectionState) => void;
+  setSelection: (selection: SelectionState) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+}
+```
+
+
+
+## Troubleshooting
+
+### History not working
+
+**Problem:** Undo/redo doesn't work
+
+**Solution:** Ensure you're using `updateContent` instead of directly setting content:
+```tsx showLineNumbers
+// ❌ Bad: Bypasses history
+setContent(newContent);
+
+// ✅ Good: Adds to history
+updateContent(newContent);
+```
+
+
+
+### Cursor jumping
+
+**Problem:** Cursor jumps to end after typing
+
+**Solution:** Pass selection to `updateContent`:
+```tsx showLineNumbers
+// ❌ Bad: Selection not updated
+updateContent(newContent);
+
+// ✅ Good: Selection maintained
+updateContent(newContent, { start: cursorPos, end: cursorPos });
+```
+
+
+
+### Blocks not updating
+
+**Problem:** Blocks array doesn't reflect content changes
+
+**Solution:** Blocks are memoized and should update automatically. If not, check:
+- Content is being updated via `updateContent`
+- No stale closures in event handlers
+- React version >= 18
+
+
+
+## Integration with Other Hooks
+
+### With useMarkdownShortcuts
+```tsx showLineNumbers
+const editor = useEditor('');
+useMarkdownShortcuts(textareaRef, editor.updateContent);
+
+// Shortcuts automatically update content with history
+```
+
+### With Custom Hooks
+```tsx showLineNumbers
+function useAutoSave(content: string) {
+  useEffect(() => {
+    const timer = setTimeout(() => save(content), 2000);
+    return () => clearTimeout(timer);
+  }, [content]);
+}
+
+const editor = useEditor('');
+useAutoSave(editor.content);
+```
+
+<Pagination
+  previous={{
+    to: "/docs/components/editor-toolbar",
+    label: "Editor Toolbar",
+  }}
+  next={{
+    to: "/docs/hooks/use-editor-shortcuts",
+    label: "useEditorShortcuts",
+  }}
+/>

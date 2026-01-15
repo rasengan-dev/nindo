@@ -23,16 +23,13 @@ const navigation = [
     title: "Hooks",
     items: [
       { label: "useEditor", to: "/docs/hooks/use-editor" },
-      { label: "useMarkdownShortcuts", to: "/docs/hooks/use-markdown-shortcuts" }
+      { label: "useEditorShortcuts", to: "/docs/hooks/use-editor-shortcuts" }
     ]
   },
   {
     title: "Customization",
     items: [
-      { label: "Custom Toolbar", to: "/docs/customization/custom-toolbar" },
-      { label: "Custom Editor Core", to: "/docs/customization/custom-editor-core" },
-      { label: "Custom Editor Preview", to: "/docs/customization/custom-editor-preview" },
-      { label: "Custom Shortcuts", to: "/docs/customization/custom-shortcuts" }
+      { label: "Custom Editor", to: "/docs/customization/custom-editor" },
     ]
   }
 ];

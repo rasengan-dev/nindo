@@ -12,7 +12,7 @@
       "dependencies": ["lucide-react", "react-markdown", "remark-gfm", "react-syntax-highlighter", "@rasenganjs/theme"],
       "files": [
         {
-          "path": "src/registry/nindo/editors/markdown.tsx",
+          "path": "src/registry/nindo/editors/markdown-editor.tsx",
           "type": "registry:component"
         }
       ]

@@ -1,6 +1,6 @@
 'use client';
  
-import { Editor, createToolbarActions, useEditor } from '@/registry/nindo/editors/markdown';
+import { Editor, createToolbarActions, useEditor } from '@/registry/nindo/editors/markdown-editor';
 import { useRef } from 'react';
  
 export default function MinimalToolbar() {

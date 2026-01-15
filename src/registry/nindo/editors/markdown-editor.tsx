@@ -279,14 +279,24 @@ const useEditor = (initialContent: string = '') => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+      const isUndo =
+        (e.metaKey || e.ctrlKey) &&
+        !e.shiftKey &&
+        e.key.toLowerCase() === 'z';
+
+      const isRedo =
+        ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'z')
+
+      if (isUndo) {
         e.preventDefault();
-        if (e.shiftKey) {
-          redo();
-        } else {
-          undo();
-        }
+        undo();
       }
+
+      if (isRedo) {
+        e.preventDefault();
+        redo();
+      }
+
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -307,7 +317,7 @@ const useEditor = (initialContent: string = '') => {
   };
 };
 
-const useMarkdownShortcuts = (
+const useEditorShortcuts = (
   textareaRef: React.RefObject<HTMLTextAreaElement | null>,
   updateContent: (content: string, selection?: SelectionState) => void
 ) => {
@@ -319,37 +329,6 @@ const useMarkdownShortcuts = (
       const { value, selectionStart, selectionEnd } = textarea;
       const selection = { start: selectionStart || 0, end: selectionEnd || 0 };
 
-      if (e.key === ' ') {
-        const lines = value.split('\n');
-        let currentPos = 0;
-        let currentLine = '';
-        
-        for (const line of lines) {
-          if (selectionStart <= currentPos + line.length) {
-            currentLine = line;
-            break;
-          }
-          currentPos += line.length + 1;
-        }
-
-        const shortcuts: Record<string, string> = {
-          '#': '# ',
-          '##': '## ',
-          '###': '### ',
-          '-': '- ',
-          '>': '> ',
-          '```': '```\n'
-        };
-
-        for (const [trigger, replacement] of Object.entries(shortcuts)) {
-          if (currentLine.trimStart() === trigger) {
-            e.preventDefault();
-            const result = replaceLinePrefix(value, selection, replacement.trim());
-            updateContent(result.content, result.selection);
-            return;
-          }
-        }
-      }
 
       const pairs: Record<string, string> = {
         '**': '**',
@@ -362,6 +341,7 @@ const useMarkdownShortcuts = (
         "'": "'"
       };
 
+      // Handling pairs
       if (pairs[e.key] && selectionStart === selectionEnd) {
         e.preventDefault();
         const before = value.slice(0, selectionStart);
@@ -374,20 +354,65 @@ const useMarkdownShortcuts = (
         return;
       }
 
+      // Handling Tab
       if (e.key === 'Tab') {
         e.preventDefault();
+
         const before = value.slice(0, selectionStart);
         const after = value.slice(selectionEnd);
-        const newContent = before + '  ' + after;
-        updateContent(newContent, {
-          start: selectionStart + 2,
-          end: selectionStart + 2
+        const newValue = before + '  ' + after;
+        const cursorPos = selectionStart + 2;
+
+        updateContent(newValue);
+
+        // Restore cursor AFTER render
+        requestAnimationFrame(() => {
+          textarea.setSelectionRange(cursorPos, cursorPos);
         });
+      }
+
+      // Handling action shorcuts like ctrl+b, ctrl+i
+      if (e.key.toLowerCase() === "b") {
+        const before = value.slice(0, selectionStart);
+        const after = value.slice(selectionEnd);
+        const inBetween = value.slice(selectionStart, selectionEnd);
+        
+        const newValue = `${before}**${inBetween}**${after}`;
+        
+        if (inBetween) {
+          e.preventDefault();
+
+          updateContent(newValue);
+  
+          // Restore cursor AFTER render
+          requestAnimationFrame(() => {
+            textarea.setSelectionRange(selectionStart + 2, selectionEnd + 2); 
+          });
+        }
+      }
+
+      if (e.key.toLowerCase() === "i") {
+        const before = value.slice(0, selectionStart);
+        const after = value.slice(selectionEnd);
+        const inBetween = value.slice(selectionStart, selectionEnd);
+        
+        const newValue = `${before}_${inBetween}_${after}`;
+        
+        if (inBetween) {
+          e.preventDefault();
+
+          updateContent(newValue);
+  
+          // Restore cursor AFTER render
+          requestAnimationFrame(() => {
+            textarea.setSelectionRange(selectionStart + 1, selectionEnd + 1);
+          });
+        }
       }
     };
 
-    textarea.addEventListener('keydown', handleKeyDown);
-    return () => textarea.removeEventListener('keydown', handleKeyDown);
+    textarea.addEventListener('keydown', handleKeyDown, true);
+    return () => textarea.removeEventListener('keydown', handleKeyDown, true);
   }, [textareaRef, updateContent]);
 };
 
@@ -662,7 +687,7 @@ const MarkdownEditor = ({
 		canUndo,
 		canRedo
 	} = useEditor(defaultContent || "");
-	useMarkdownShortcuts(textareaRef, updateContent);
+	useEditorShortcuts(textareaRef, updateContent);
 
 	const handleToolbarAction = useCallback((action: ToolbarAction) => {
 		const result = action.handler(content, selection);
@@ -674,8 +699,8 @@ const MarkdownEditor = ({
 		
 		setTimeout(() => {
 			if (textareaRef.current) {
+        textareaRef.current.setSelectionRange(result.selection.start, result.selection.end);
 				textareaRef.current.focus();
-				textareaRef.current.setSelectionRange(result.selection.start, result.selection.end);
 			}
 		}, 0);
 	}, [content, selection, updateContent]);
@@ -741,9 +766,10 @@ export {
   Editor,
   MarkdownEditor,
   useEditor,
-  useMarkdownShortcuts,
+  useEditorShortcuts,
   createToolbarActions,
   type ToolbarAction,
   type ViewMode,
-  type Orientation
+  type Orientation,
+  type Block
 };
