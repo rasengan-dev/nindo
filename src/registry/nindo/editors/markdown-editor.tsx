@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState, useCallback, useRef, useEffect, useMemo, ComponentProps } from 'react';
 import { Card } from "@/components/common/ui/card";
 import { Button } from '@/components/common/ui/button';
-import { Bold, Braces, CheckCircle2, CodeXml, Copy, Edit2, Eye, GalleryHorizontal, GalleryVertical, Heading1, Heading2, Heading3, Italic, Link2, Quote, Redo2, SquareSplitHorizontal, Undo2 } from 'lucide-react';
+import { Bold, Braces, CheckCircle2, CodeXml, Copy, Edit2, Eye, GalleryHorizontal, GalleryVertical, Heading1, Heading2, Heading3, Italic, Link2, Maximize2, Minimize2, Quote, Redo2, SquareSplitHorizontal, Undo2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -431,8 +433,10 @@ const EditorToolbar: React.FC<{
   mode?: ViewMode;
   setMode?: (mode: ViewMode) => void;
 	orientation?: Orientation,
-	setOrientation?: (orientation: Orientation) => void
-}> = ({ actions, onAction, currentBlock, undo, redo, canUndo, canRedo, mode, setMode, orientation = "horizontal", setOrientation }) => {
+	setOrientation?: (orientation: Orientation) => void;
+  fullScreen?: boolean,
+  setFullScreen?: () => void;
+}> = ({ actions, onAction, currentBlock, undo, redo, canUndo, canRedo, mode, setMode, orientation = "horizontal", setOrientation, fullScreen = false, setFullScreen }) => {
   return (
     <div className="flex items-center justify-between gap-2 h-[50px] px-2 py-3 bg-background border-b border-border overflow-x-auto overflow-y-hidden">
       <div className='flex items-center gap-2'>
@@ -469,8 +473,21 @@ const EditorToolbar: React.FC<{
         </div>
       </div>
 
+
       <div className='flex items-center gap-2'>
 				<div className='flex items-center gap-1'>
+          <div className='w-[50px] bg-red-300'></div>
+          <Button
+            size={"icon"} 
+            onClick={() => setFullScreen && setFullScreen()}
+            variant={"outline"} 
+            title="Edit"
+            disabled={!setOrientation}
+          >
+            {
+							fullScreen? <Minimize2 /> : <Maximize2 />
+						}
+          </Button>
           <Button
             size={"icon"} 
             onClick={() => setOrientation && setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
@@ -673,6 +690,7 @@ const MarkdownEditor = ({
 
 	const [mode, setMode] = useState<ViewMode>("split");
 	const [orientation, setOrientation] = useState<Orientation>("horizontal");
+  const [fullScreen, setFullScreen] = useState(false);
 
 	const toolbarActions = createToolbarActions();
 
@@ -705,8 +723,30 @@ const MarkdownEditor = ({
 		}, 0);
 	}, [content, selection, updateContent]);
 
+  useEffect(() => {
+    if (typeof window === undefined) return;
+
+    const handleResize = () => {
+      const windowWidth = window.innerWidth;
+
+      if (windowWidth < 767) {
+        setOrientation("vertical");
+      } else {
+        setOrientation("horizontal");
+      }
+    }
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
 	return (
-		<Card className={cn("flex h-full gap-0 shadow-none p-0 overflow-hidden", className)}>
+		<Card className={cn("flex h-full gap-0 shadow-none p-0 overflow-hidden", className, fullScreen ? "fixed top-0 left-0 w-full h-full z-50" : "")}>
 			<Editor.Toolbar
 				actions={toolbarActions}
 				onAction={(action) => handleToolbarAction(action)}
@@ -719,6 +759,8 @@ const MarkdownEditor = ({
 				setMode={setMode}
 				orientation={orientation}
 				setOrientation={setOrientation}
+        fullScreen={fullScreen}
+        setFullScreen={() => setFullScreen(!fullScreen)}
 			/>
 
 			<div className={cn("relative w-full h-full min-h-[400px] flex gap-2 p-2", orientation === "horizontal" ? "flex-row": "flex-col")}>

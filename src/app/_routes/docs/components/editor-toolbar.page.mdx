@@ -383,6 +383,55 @@ const handleOrientationChange = (newOrientation: "horizontal" | "vertical") => {
 />;
 ```
 
+### fullScreen
+
+- **Type**: `boolean`
+- **Optional**: Yes
+- **Default**: `false`
+- **Description**: Enable fullScreen view or not
+
+```tsx showLineNumbers
+const [fullScreen, setFullScreen] = useState(false);
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  fullScreen={fullScreen}
+/>;
+```
+
+**Effect:**
+
+- `True` → Editor is in fullScreen view mode
+- `False` → Editor is in the normal view mode
+
+### setFullScreen
+
+- **Type**: `() => void`
+- **Optional**: Yes
+- **Description**: Callback to change the fullScreen mode
+
+```tsx showLineNumbers
+const [fullScreen, setFullScreen] = useState(false);
+
+<Editor.Toolbar
+  actions={actions}
+  onAction={handleAction}
+  currentBlock={currentBlock}
+  undo={undo}
+  redo={redo}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  fullScreen={fullScreen}
+  setFullScreen={() => setFullScreen(!fullScreen)}
+/>;
+```
+
 ## Basic Usage
 
 ### Minimal Setup
